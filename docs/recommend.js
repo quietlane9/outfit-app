@@ -69,7 +69,7 @@
     for (const base of bases) {
       for (const mid of [null, ...mids]) {
         for (const outer of [null, ...outers]) {
-          if (mid && outer && !/코트/.test(outer['이름'])) continue; // 재킷 위에 재킷은 X, 코트 안에만 레이어드
+          if (mid && outer && !/코트|패딩/.test(outer['이름'])) continue; // 재킷 위에 재킷은 X, 코트·패딩 안에만 레이어드
           if (outerRule === '없음' && outer) continue;
           if (/필수/.test(outerRule) && /아우터/.test(outerRule) && !outer) continue;
           if (/미들 필수/.test(outerRule) && !mid && !outer) continue;
