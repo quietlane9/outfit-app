@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F6F5F3">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>오늘의 옷</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --bg:#F6F5F3; --card:#FFFFFF; --ink:#2B2A28; --muted:#8A857D; --line:#E7E3DD;
+    --accent:#34495E; --accent-soft:#E9EDF1; --rain:#3B6EA8; --warn:#B5653A;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+  body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+  .wrap{max-width:480px;margin:0 auto;padding:18px 16px 40px}
+  header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+  h1{font-size:22px;margin:0;letter-spacing:-.5px}
+  .sub{font-size:12px;color:var(--muted);margin-top:3px}
+  .icon-btn{border:0;background:none;color:var(--muted);font-size:13px;padding:6px 4px;cursor:pointer}
+  .tabs{display:flex;background:#ECE9E4;border-radius:12px;padding:4px;margin-bottom:12px}
+  .tabs button{flex:1;border:0;background:none;padding:9px 0;border-radius:9px;font:inherit;font-size:15px;color:var(--muted);cursor:pointer}
+  .tabs button.on{background:var(--card);color:var(--ink);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+  .slot{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:10px 8px 9px;text-align:center;cursor:pointer;position:relative;transition:.15s}
+  .slot.on{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+  .slot.off{opacity:.45}
+  .slot.past{opacity:.3;pointer-events:none}
+  .slot .nm{font-size:12px;color:var(--muted)}
+  .slot svg{width:30px;height:30px;margin:4px auto 2px;display:block}
+  .slot .t{font-size:18px;font-weight:700;letter-spacing:-.5px}
+  .slot .t small{font-size:12px;font-weight:500;color:var(--muted)}
+  .slot .r{font-size:11px;color:var(--muted);margin-top:2px}
+  .slot .r.rain{color:var(--rain);font-weight:600}
+  .hint{font-size:11px;color:var(--muted);text-align:center;margin:2px 0 14px}
+  .purposes{display:flex;gap:6px;margin-bottom:14px}
+  .purposes button{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:8px 0;font:inherit;font-size:14px;color:var(--ink);cursor:pointer}
+  .purposes button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .summary{font-size:12.5px;color:var(--muted);margin:0 2px 10px;line-height:1.5}
+  .summary b{color:var(--ink)}
+  .card{background:var(--card);border-radius:18px;padding:14px;box-shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(0,0,0,.04)}
+  .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .card-head .no{font-size:13px;color:var(--muted)}
+  .warm{font-size:12px;color:var(--muted)}
+  .warm b{color:var(--ink)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .piece{background:#F6F5F3;border-radius:12px;overflow:hidden}
+  .piece .ph{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:#F6F5F3}
+  .piece img{width:100%;height:100%;object-fit:contain;display:block}
+  .swatch{width:56%;aspect-ratio:1/1;border-radius:50%;box-shadow:inset 0 0 0 6px rgba(255,255,255,.35)}
+  .piece .cap{padding:6px 9px 8px;font-size:12.5px;line-height:1.3;background:#fff}
+  .piece .role{font-size:10.5px;color:var(--muted);display:block;margin-bottom:1px}
+  .acc{display:flex;align-items:center;gap:10px;background:#F6F5F3;border-radius:12px;padding:8px 10px;margin-top:8px;font-size:13px}
+  .acc .dot{width:30px;height:30px;border-radius:50%;flex:none}
+  .acc img{width:40px;height:40px;object-fit:contain;border-radius:8px}
+  .acc .role{font-size:10.5px;color:var(--muted);display:block}
+  .notes{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .note{font-size:12px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:5px 10px}
+  .note.rain{background:#E6EEF8;color:var(--rain)}
+  .pager{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .pager button{border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:9px 16px;font:inherit;font-size:14px;cursor:pointer;color:var(--ink)}
+  .pager button:disabled{opacity:.35}
+  .dots{display:flex;gap:5px}
+  .dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+  .dots i.on{background:var(--accent)}
+  .msg{background:var(--card);border-radius:14px;padding:18px;font-size:14px;line-height:1.6}
+  .msg input{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px;font:inherit;margin:6px 0 10px}
+  .msg button{width:100%;padding:11px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:inherit;font-weight:600}
+  .err{color:var(--warn);font-size:13px;margin-top:8px}
+  .stale{font-size:11px;color:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>오늘의 옷</h1>
+      <div class="sub" id="sub">불러오는 중…</div>
+    </div>
+    <button class="icon-btn" id="refresh" title="새로고침">⟳ 새로고침</button>
+  </header>
+  <div id="app"></div>
+</div>
+
+<script src="config.js"></script>
+<script src="recommend.js"></script>
+<script>
+(function () {
+  const LS = { token: 'outfit_token', api: 'outfit_api', cache: 'outfit_cache' };
+  const store = {
+    get: (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} },
+    del: (k) => { try { localStorage.removeItem(k); } catch (e) {} }
+  };
+  // #token=...&api=... 로 열면 저장 후 주소에서 지움 (휴대폰 첫 설정용)
+  if (location.hash.length > 1) {
+    const h = new URLSearchParams(location.hash.slice(1));
+    if (h.get('token')) store.set(LS.token, h.get('token'));
+    if (h.get('api')) store.set(LS.api, h.get('api'));
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+  const apiUrl = () => store.get(LS.api) || (window.OUTFIT_API && !/XXXX/.test(window.OUTFIT_API) ? window.OUTFIT_API : '');
+
+  const SLOT_NAMES = ['아침', '낮', '저녁'];
+  const PURPOSES = ['일상', '운동', '모임', '격식'];
+  const state = { data: null, day: 'today', purpose: '일상', slots: { today: null, tomorrow: null }, idx: 0, stale: false };
+  const $app = document.getElementById('app');
+  const $sub = document.getElementById('sub');
+
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const r0 = (n) => Math.round(n);
+
+  function skyIcon(s) {
+    const rain = s.precip && s.precip !== '없음';
+    const snow = /눈/.test(s.precip || '');
+    const cloud = '<path d="M9 22h14a5 5 0 0 0 0-10 7 7 0 0 0-13.4 1.6A4.3 4.3 0 0 0 9 22z" fill="#C9CED6"/>';
+    if (rain) return '<svg viewBox="0 0 32 32">' + cloud + (snow
+      ? '<circle cx="12" cy="27" r="1.4" fill="#8FB3DA"/><circle cx="18" cy="28" r="1.4" fill="#8FB3DA"/><circle cx="24" cy="27" r="1.4" fill="#8FB3DA"/>'
+      : '<path d="M12 25l-1.5 4M18 25l-1.5 4M24 25l-1.5 4" stroke="#3B6EA8" stroke-width="1.8" stroke-linecap="round"/>') + '</svg>';
+    if (s.sky === '맑음') return '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="6" fill="#F2B544"/><g stroke="#F2B544" stroke-width="2" stroke-linecap="round"><path d="M16 4v3M16 25v3M4 16h3M25 16h3M7.5 7.5l2 2M22.5 22.5l2 2M7.5 24.5l2-2M22.5 9.5l2-2"/></g></svg>';
+    if (s.sky === '구름많음') return '<svg viewBox="0 0 32 32"><circle cx="12" cy="12" r="5" fill="#F2B544"/>' + cloud + '</svg>';
+    return '<svg viewBox="0 0 32 32">' + cloud + '</svg>';
+  }
+
+  function nowHour() { return Number(new Intl.DateTimeFormat('en-GB', { hour: '2-digit', hour12: false, timeZone: 'Asia/Seoul' }).format(new Date())); }
+
+  function defaultSlots(day) {
+    const d = state.data.weather.days[day];
+    if (day !== 'today') return SLOT_NAMES.slice();
+    const h = nowHour();
+    const live = SLOT_NAMES.filter((n) => d.slots[n] && d.slots[n].hours[d.slots[n].hours.length - 1] >= h);
+    return live.length ? live : SLOT_NAMES.slice(-1);
+  }
+  function isPast(day, n) {
+    if (day !== 'today') return false;
+    const s = state.data.weather.days.today.slots[n];
+    return !s || s.hours[s.hours.length - 1] < nowHour();
+  }
+
+  const SWATCH = { '퍼플': '#7B5EA7', '브라운': '#7A5236', '검정': '#222', '그레이': '#8f8f8f', '네이비': '#2D3A55', '베이지': '#D8C7A8', '아이보리': '#EFE9DC', '핑크': '#E7A9B6' };
+  function piece(item, role) {
+    const img = item['사진'] ? '<img loading="lazy" src="images/' + esc(item['사진']) + '" alt="' + esc(item['이름']) + '">' : '';
+    let ph = img;
+    if (!img) {
+      const c = SWATCH[item['색이름']];
+      const bg = c || 'conic-gradient(#D9826B,#E7C36A,#7FB08A,#6C8FC7,#A07BC0,#D9826B)';
+      ph = '<div class="swatch" style="background:' + bg + '"></div>';
+    }
+    return '<div class="piece"><div class="ph">' + ph + '</div><div class="cap"><span class="role">' + role + '</span>' + esc(item['이름']) + '</div></div>';
+  }
+
+  function accRow(item) {
+    const c = SWATCH[item['색이름']] || 'conic-gradient(#D9826B,#E7C36A,#7FB08A,#6C8FC7,#A07BC0,#D9826B)';
+    const ph = item['사진'] ? '<img src="images/' + esc(item['사진']) + '" alt="">' : '<span class="dot" style="background:' + c + '"></span>';
+    return '<div class="acc">' + ph + '<span><span class="role">소품</span>' + esc(item['이름']) + '</span></div>';
+  }
+
+  function render() {
+    const d = state.data;
+    const days = d.weather.days;
+    const fmt = (ymd) => Number(ymd.slice(4, 6)) + '/' + Number(ymd.slice(6, 8));
+    if (!state.slots[state.day]) state.slots[state.day] = defaultSlots(state.day);
+    const sel = state.slots[state.day];
+    const res = Outfit.recommend(d, { day: state.day, purpose: state.purpose, slots: sel });
+    const ctx = res.ctx;
+    if (state.idx >= res.combos.length) state.idx = 0;
+    const c = res.combos[state.idx];
+
+    $sub.innerHTML = esc(d.weather.region || '') + ' · ' + (d.weather.base.time.slice(0, 2)) + '시 발표' + (state.stale ? ' <span class="stale">· 저장된 정보</span>' : '');
+
+    let html = '<div class="tabs">' + ['today', 'tomorrow'].map((k) =>
+      '<button data-day="' + k + '" class="' + (state.day === k ? 'on' : '') + '">' + (k === 'today' ? '오늘' : '내일') + ' <small>' + fmt(days[k].date) + '</small></button>').join('') + '</div>';
+
+    html += '<div class="slots">' + SLOT_NAMES.map((n) => {
+      const s = days[state.day].slots[n];
+      if (!s) return '<div class="slot past"><div class="nm">' + n + '</div><div class="r">정보 없음</div></div>';
+      const past = isPast(state.day, n);
+      const on = sel.includes(n);
+      const rain = s.precip !== '없음' || s.popMax >= 60;
+      return '<div class="slot ' + (past ? 'past' : on ? 'on' : 'off') + '" data-slot="' + n + '">' +
+        '<div class="nm">' + n + ' ' + s.hours[0] + '–' + s.hours[s.hours.length - 1] + '시</div>' + skyIcon(s) +
+        '<div class="t">' + r0(s.feelsMin) + (r0(s.feelsMax) !== r0(s.feelsMin) ? '~' + r0(s.feelsMax) : '') + '°<small> 체감</small></div>' +
+        '<div class="r' + (rain ? ' rain' : '') + '">' + (rain ? (s.precip !== '없음' ? s.precip + ' ' : '') + s.popMax + '%' : '강수 ' + s.popMax + '%') + (s.wsdMax >= 4 ? ' · 바람' : '') + '</div></div>';
+    }).join('') + '</div><div class="hint">밖에 있는 시간대를 눌러 고르세요</div>';
+
+    html += '<div class="purposes">' + PURPOSES.map((p) => '<button data-purpose="' + p + '" class="' + (state.purpose === p ? 'on' : '') + '">' + p + '</button>').join('') + '</div>';
+
+    html += '<div class="summary">체감 <b>' + r0(ctx.feelsMin) + '~' + r0(ctx.feelsMax) + '°</b>' +
+      (state.purpose === '운동' ? ' (운동 후 귀가 고려 ' + r0(ctx.design) + '°)' : '') +
+      ' · 보온 목표 <b>' + ctx.warmMin + '~' + ctx.warmMax + '</b> · ' + esc(ctx.rule['겉옷'] || '') +
+      (ctx.bigSwing ? ' · 일교차 ' + r0(ctx.swing) + '°' : '') + '</div>';
+
+    if (!c) {
+      html += '<div class="msg">조건에 맞는 조합이 없어요. 시간대나 목적을 바꿔보세요.</div>';
+    } else {
+      const parts = [];
+      if (c.outer) parts.push(piece(c.outer, '아우터'));
+      if (c.mid) parts.push(piece(c.mid, c.outer ? '안에' : '겉옷'));
+      c.base.forEach((x) => parts.push(piece(x, x['레이어'] === '원피스' ? '원피스' : x['레이어'] === '하의' ? '하의' : '상의')));
+      const notes = c.notes.map((n) => '<span class="note' + (/우산/.test(n) ? ' rain' : '') + '">' + esc(n) + '</span>').join('');
+      html += '<div class="card"><div class="card-head"><span class="no">추천 ' + (state.idx + 1) + ' / ' + res.combos.length + '</span>' +
+        '<span class="warm">보온 <b>' + c.warm + '</b></span></div><div class="grid">' + parts.join('') + '</div>' + (c.acc ? accRow(c.acc) : '') +
+        (notes ? '<div class="notes">' + notes + '</div>' : '') +
+        '<div class="pager"><button data-nav="-1" ' + (state.idx === 0 ? 'disabled' : '') + '>◀ 이전</button><div class="dots">' +
+        res.combos.map((_, i) => '<i class="' + (i === state.idx ? 'on' : '') + '"></i>').join('') +
+        '</div><button data-nav="1" ' + (state.idx >= res.combos.length - 1 ? 'disabled' : '') + '>다음 ▶</button></div></div>';
+    }
+    $app.innerHTML = html;
+  }
+
+  $app.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-day],[data-slot],[data-purpose],[data-nav],[data-save]');
+    if (!t) return;
+    if (t.dataset.day) { state.day = t.dataset.day; state.idx = 0; }
+    else if (t.dataset.slot) {
+      const sel = state.slots[state.day]; const n = t.dataset.slot; const i = sel.indexOf(n);
+      if (i >= 0) { if (sel.length > 1) sel.splice(i, 1); } else { sel.push(n); sel.sort((a, b) => SLOT_NAMES.indexOf(a) - SLOT_NAMES.indexOf(b)); }
+      state.idx = 0;
+    }
+    else if (t.dataset.purpose) { state.purpose = t.dataset.purpose; state.idx = 0; }
+    else if (t.dataset.nav) { state.idx += Number(t.dataset.nav); }
+    else if (t.dataset.save) { return saveSetup(); }
+    render();
+  });
+
+  function setupForm(err) {
+    $sub.textContent = '처음 설정';
+    $app.innerHTML = '<div class="msg">' +
+      (apiUrl() ? '' : '웹앱 주소<input id="api" placeholder="https://script.google.com/macros/s/.../exec">') +
+      '접근 토큰 (APP_TOKEN)<input id="tok" type="password" autocomplete="off">' +
+      '<button data-save="1">저장하고 불러오기</button>' + (err ? '<div class="err">' + esc(err) + '</div>' : '') + '</div>';
+  }
+  function saveSetup() {
+    const a = document.getElementById('api'), t = document.getElementById('tok');
+    if (a && a.value.trim()) store.set(LS.api, a.value.trim());
+    if (t && t.value.trim()) store.set(LS.token, t.value.trim());
+    load();
+  }
+
+  async function load() {
+    const api = apiUrl(), token = store.get(LS.token);
+    const cached = store.get(LS.cache);
+    if (!state.data && cached) { try { state.data = JSON.parse(cached); state.stale = true; render(); } catch (e) {} }
+    if (!api || !token) return setupForm();
+    try {
+      const res = await fetch(api + '?token=' + encodeURIComponent(token), { redirect: 'follow' });
+      const json = await res.json();
+      if (json.error === 'unauthorized') { store.del(LS.token); return setupForm('토큰이 맞지 않아요.'); }
+      if (json.error) throw new Error(json.error);
+      state.data = json; state.stale = false;
+      store.set(LS.cache, JSON.stringify(json));
+      render();
+    } catch (e) {
+      if (state.data) { state.stale = true; render(); }
+      else setupForm('불러오기 실패: ' + e.message);
+    }
+  }
+  document.getElementById('refresh').addEventListener('click', () => { $sub.textContent = '불러오는 중…'; load(); });
+  load();
+})();
+</script>
+</body>
+</html>
