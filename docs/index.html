@@ -139,9 +139,15 @@
     return !s || s.hours[s.hours.length - 1] < nowHour();
   }
 
+  // 사진 캐시 무효화: images/manifest.json 의 해시를 ?v= 로 붙임
+  let IMGV = {};
+  const imgSrc = (f) => 'images/' + encodeURIComponent(f) + (IMGV[f] ? '?v=' + IMGV[f] : '');
+  fetch('images/manifest.json?t=' + Date.now(), { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : {})).then((m) => { IMGV = m || {}; if (state.data) render(); }).catch(() => {});
+
   const SWATCH = { '퍼플': '#7B5EA7', '브라운': '#7A5236', '검정': '#222', '그레이': '#8f8f8f', '네이비': '#2D3A55', '베이지': '#D8C7A8', '아이보리': '#EFE9DC', '핑크': '#E7A9B6' };
   function piece(item, role) {
-    const img = item['사진'] ? '<img loading="lazy" src="images/' + esc(item['사진']) + '" alt="' + esc(item['이름']) + '">' : '';
+    const img = item['사진'] ? '<img loading="lazy" src="' + esc(imgSrc(item['사진'])) + '" alt="' + esc(item['이름']) + '">' : '';
     let ph = img;
     if (!img) {
       const c = SWATCH[item['색이름']];
@@ -153,7 +159,7 @@
 
   function accRow(item) {
     const c = SWATCH[item['색이름']] || 'conic-gradient(#D9826B,#E7C36A,#7FB08A,#6C8FC7,#A07BC0,#D9826B)';
-    const ph = item['사진'] ? '<img src="images/' + esc(item['사진']) + '" alt="">' : '<span class="dot" style="background:' + c + '"></span>';
+    const ph = item['사진'] ? '<img src="' + esc(imgSrc(item['사진'])) + '" alt="">' : '<span class="dot" style="background:' + c + '"></span>';
     return '<div class="acc">' + ph + '<span><span class="role">소품</span>' + esc(item['이름']) + '</span></div>';
   }
 
