@@ -46,7 +46,10 @@
   .warm{font-size:12px;color:var(--muted)}
   .warm b{color:var(--ink)}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .piece{background:#F6F5F3;border-radius:12px;overflow:hidden}
+  .piece{background:#F6F5F3;border-radius:12px;overflow:hidden;position:relative}
+  .like{position:absolute;top:6px;right:6px;width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.85);font-size:17px;line-height:32px;padding:0;color:#B9B3AA;cursor:pointer}
+  .like.on{color:#D2475A}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2B2A28;color:#fff;font-size:13px;padding:9px 14px;border-radius:10px;opacity:.92}
   .piece .ph{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:#F6F5F3}
   .piece img{width:100%;height:100%;object-fit:contain;display:block}
   .swatch{width:56%;aspect-ratio:1/1;border-radius:50%;box-shadow:inset 0 0 0 6px rgba(255,255,255,.35)}
@@ -164,7 +167,9 @@
       const bg = c || 'conic-gradient(#D9826B,#E7C36A,#7FB08A,#6C8FC7,#A07BC0,#D9826B)';
       ph = '<div class="swatch" style="background:' + bg + '"></div>';
     }
-    return '<div class="piece"><div class="ph">' + ph + '</div><div class="cap"><span class="role">' + role + '</span>' + esc(item['이름']) + '</div></div>';
+    const liked = String(item['좋아요']).toUpperCase() === 'Y';
+    const heart = '<button class="like' + (liked ? ' on' : '') + '" data-like="' + esc(item['ID']) + '" aria-label="좋아요">' + (liked ? '♥' : '♡') + '</button>';
+    return '<div class="piece">' + heart + '<div class="ph">' + ph + '</div><div class="cap"><span class="role">' + role + '</span>' + esc(item['이름']) + '</div></div>';
   }
 
   function accRow(item) {
@@ -252,9 +257,10 @@
   }
 
   $app.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-day],[data-slot],[data-purpose],[data-nav],[data-save],[data-cat]');
+    const t = e.target.closest('[data-like],[data-day],[data-slot],[data-purpose],[data-nav],[data-save],[data-cat]');
     if (!t) return;
-    if (t.dataset.cat) { state.cat = t.dataset.cat; }
+    if (t.dataset.like) { return toggleLike(t.dataset.like); }
+    else if (t.dataset.cat) { state.cat = t.dataset.cat; }
     else if (t.dataset.day) { state.day = t.dataset.day; state.idx = 0; }
     else if (t.dataset.slot) {
       const sel = state.slots[state.day]; const n = t.dataset.slot; const i = sel.indexOf(n);
@@ -266,6 +272,33 @@
     else if (t.dataset.save) { return saveSetup(); }
     render();
   });
+
+  function toast(msg) {
+    const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
+    document.body.appendChild(el); setTimeout(() => el.remove(), 2200);
+  }
+  async function toggleLike(id) {
+    const item = (state.data.closet || []).find((c) => String(c['ID']) === id);
+    if (!item) return;
+    const prev = item['좋아요'];
+    const next = String(prev).toUpperCase() !== 'Y';
+    item['좋아요'] = next ? 'Y' : '';
+    store.set(LS.cache, JSON.stringify(state.data));
+    render();
+    try {
+      const res = await fetch(apiUrl(), {
+        method: 'POST', redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ token: store.get(LS.token), action: 'like', id: id, value: next })
+      });
+      const j = await res.json();
+      if (!j.ok) throw new Error(j.error || '저장 실패');
+      toast(next ? '♥ 좋아요 저장' : '좋아요 해제');
+    } catch (e) {
+      item['좋아요'] = prev; store.set(LS.cache, JSON.stringify(state.data)); render();
+      toast('저장 못 했어요: ' + e.message);
+    }
+  }
 
   function setupForm(err) {
     $sub.textContent = '처음 설정';

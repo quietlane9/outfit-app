@@ -6,8 +6,11 @@
   const num = (v, d) => (v === '' || v == null || isNaN(Number(v)) ? d : Number(v));
   const yes = (v) => String(v).trim().toUpperCase() === 'Y';
 
-  function seasonOf(month) {
-    return month <= 2 || month === 12 ? '겨울' : month <= 5 ? '봄' : month <= 8 ? '여름' : '가을';
+  // 체감온도로 계절 판단: 20℃↑ 여름, 12~20℃ 봄/가을(1~6월은 봄), 12℃↓ 겨울
+  function seasonByTemp(t, month) {
+    if (t >= 20) return '여름';
+    if (t >= 12) return month >= 1 && month <= 6 ? '봄' : '가을';
+    return '겨울';
   }
 
   // 결정적 난수 (같은 날·같은 조건이면 같은 순서)
@@ -35,7 +38,7 @@
       bigSwing: swing >= num(s['일교차 기준(℃)'], 10),
       swing,
       warmMin: num(rule['목표 보온합 최소'], 0), warmMax: num(rule['목표 보온합 최대'], 99),
-      season: seasonOf(Number(String(day.date).slice(4, 6)))
+      season: seasonByTemp(design, Number(String(day.date).slice(4, 6)))
     };
   }
 
@@ -107,8 +110,15 @@
             const points = all.filter((x) => x['색계열'] === '포인트').length;
             if (points > 1) score -= 2.5 * (points - 1);
             if (points === 0 && a) score -= 0.5; // 무채색 소품만 더하는 건 의미 적음
-            // 계절
-            all.forEach((x) => { if (x['계절'] && !String(x['계절']).includes(ctx.season) && x['레이어'] !== '소품') score -= 0.5; });
+            // 계절 (체감온도 기준). 코트·패딩 안에 겹친 미들은 예외
+            all.forEach((x) => {
+              if (!x['계절'] || String(x['계절']).includes(ctx.season)) return;
+              if (x['레이어'] === '소품') score -= 0.5;
+              else if (x === mid && outer) return;
+              else score -= 1.5;
+            });
+            // 좋아요
+            all.forEach((x) => { if (yes(x['좋아요'])) score += 1.5; });
 
             score += hash(ctx.day.date + opt.purpose + all.map((x) => x['ID']).join()) * 0.8;
             combos.push({ base, mid, outer, acc: a, warm, score, removable, points });
@@ -119,12 +129,13 @@
     combos.sort((x, y) => y.score - x.score);
 
     // 다양성: 상의(원피스)·하의·겉옷이 다른 조합 위주로 5개
-    const picked = [];
+    // 다양성: 상의(원피스)는 겹치지 않게, 나머지 옷·소품은 5개 중 최대 2번
+    const picked = [], used = {};
+    const ids = (c) => [...c.base, c.mid, c.outer, c.acc].filter(Boolean).map((x) => x['ID']);
     for (const c of combos) {
-      const key = (x) => [x.base[0]['ID'], (x.outer || x.mid || {})['ID']];
       if (picked.some((p) => p.base[0]['ID'] === c.base[0]['ID'])) continue;
-      if (picked.filter((p) => key(p)[1] === key(c)[1]).length >= 2) continue;
-      picked.push(c);
+      if (ids(c).some((id) => (used[id] || 0) >= 2)) continue;
+      picked.push(c); ids(c).forEach((id) => (used[id] = (used[id] || 0) + 1));
       if (picked.length >= 5) break;
     }
     picked.forEach((c) => (c.notes = notes(c, ctx)));
