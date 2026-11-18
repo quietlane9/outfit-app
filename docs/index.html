@@ -49,6 +49,7 @@
   .piece{background:#F6F5F3;border-radius:12px;overflow:hidden;position:relative}
   .like{position:absolute;top:6px;right:6px;width:32px;height:32px;border:0;border-radius:50%;background:rgba(255,255,255,.85);font-size:17px;line-height:32px;padding:0;color:#B9B3AA;cursor:pointer}
   .like.on{color:#D2475A}
+  .del{position:absolute;top:6px;left:6px;width:30px;height:30px;border:0;border-radius:50%;background:rgba(255,255,255,.85);font-size:14px;line-height:30px;padding:0;color:#8A857D;cursor:pointer}
   .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#2B2A28;color:#fff;font-size:13px;padding:9px 14px;border-radius:10px;opacity:.92}
   .piece .ph{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;background:#F6F5F3}
   .piece img{width:100%;height:100%;object-fit:contain;display:block}
@@ -61,6 +62,7 @@
   .acc .role{font-size:10.5px;color:var(--muted);display:block}
   .notes{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
   .note{font-size:12px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:5px 10px}
+  .note.pal{background:#F3ECEF;color:#5A2E42}
   .note.rain{background:#E6EEF8;color:var(--rain)}
   .pager{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
   .pager button{border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:9px 16px;font:inherit;font-size:14px;cursor:pointer;color:var(--ink)}
@@ -158,8 +160,13 @@
   fetch('images/manifest.json?t=' + Date.now(), { cache: 'no-store' })
     .then((r) => (r.ok ? r.json() : {})).then((m) => { IMGV = m || {}; if (state.data) render(); }).catch(() => {});
 
-  const SWATCH = { '퍼플': '#7B5EA7', '브라운': '#7A5236', '검정': '#222', '그레이': '#8f8f8f', '네이비': '#2D3A55', '베이지': '#D8C7A8', '아이보리': '#EFE9DC', '핑크': '#E7A9B6' };
-  function piece(item, role) {
+  // Pinterest 팔레트 (docs/palette.json)
+  let PALETTE = null;
+  fetch('palette.json?t=' + Date.now(), { cache: 'no-store' })
+    .then((r) => (r.ok ? r.json() : null)).then((p) => { PALETTE = p; if (state.data) render(); }).catch(() => {});
+
+  const SWATCH = { '퍼플': '#7B5EA7', '브라운': '#7A5236', '검정': '#222', '그레이': '#8f8f8f', '네이비': '#2D3A55', '베이지': '#D8C7A8', '아이보리': '#EFE9DC', '핑크': '#E7A9B6', '연핑크': '#F3CCD3', '진핑크': '#D2457A', '버건디': '#6B1F2E', '화이트/블랙 스트라이프': 'repeating-linear-gradient(0deg,#fff 0 6px,#222 6px 12px)' };
+  function piece(item, role, opts) {
     const img = item['사진'] ? '<img loading="lazy" src="' + esc(imgSrc(item['사진'])) + '" alt="' + esc(item['이름']) + '">' : '';
     let ph = img;
     if (!img) {
@@ -169,7 +176,8 @@
     }
     const liked = String(item['좋아요']).toUpperCase() === 'Y';
     const heart = '<button class="like' + (liked ? ' on' : '') + '" data-like="' + esc(item['ID']) + '" aria-label="좋아요">' + (liked ? '♥' : '♡') + '</button>';
-    return '<div class="piece">' + heart + '<div class="ph">' + ph + '</div><div class="cap"><span class="role">' + role + '</span>' + esc(item['이름']) + '</div></div>';
+    const del = opts && opts.del ? '<button class="del" data-del="' + esc(item['ID']) + '" aria-label="옷장에서 삭제">🗑</button>' : '';
+    return '<div class="piece">' + heart + del + '<div class="ph">' + ph + '</div><div class="cap"><span class="role">' + role + '</span>' + esc(item['이름']) + '</div></div>';
   }
 
   function accRow(item) {
@@ -196,7 +204,7 @@
       '<button data-cat="' + n + '" class="' + (state.cat === n ? 'on' : '') + '">' + n + '<small>' + l.length + '</small></button>').join('') + '</div>';
     groups.filter(([n]) => state.cat === '전체' || state.cat === n).forEach(([n, l]) => {
       html += '<div class="group"><h2>' + n + ' <small>' + l.length + '개</small></h2><div class="closet">' +
-        l.map((c) => piece(c, esc(c['ID']) + ' · 보온 ' + esc(c['보온(1-5)']) + ' · 격식 ' + esc(c['격식(1-3)']))).join('') + '</div></div>';
+        l.map((c) => piece(c, esc(c['ID']) + ' · 보온 ' + esc(c['보온(1-5)']) + ' · 격식 ' + esc(c['격식(1-3)']), { del: true })).join('') + '</div></div>';
     });
     $app.innerHTML = html;
   }
@@ -209,7 +217,7 @@
     const fmt = (ymd) => Number(ymd.slice(4, 6)) + '/' + Number(ymd.slice(6, 8));
     if (!state.slots[state.day]) state.slots[state.day] = defaultSlots(state.day);
     const sel = state.slots[state.day];
-    const res = Outfit.recommend(d, { day: state.day, purpose: state.purpose, slots: sel });
+    const res = Outfit.recommend(Object.assign({}, d, { palette: PALETTE }), { day: state.day, purpose: state.purpose, slots: sel });
     const ctx = res.ctx;
     if (state.idx >= res.combos.length) state.idx = 0;
     const c = res.combos[state.idx];
@@ -245,7 +253,7 @@
       if (c.outer) parts.push(piece(c.outer, '아우터'));
       if (c.mid) parts.push(piece(c.mid, c.outer ? '안에' : '겉옷'));
       c.base.forEach((x) => parts.push(piece(x, x['레이어'] === '원피스' ? '원피스' : x['레이어'] === '하의' ? '하의' : '상의')));
-      const notes = c.notes.map((n) => '<span class="note' + (/우산/.test(n) ? ' rain' : '') + '">' + esc(n) + '</span>').join('');
+      const notes = c.notes.map((n) => '<span class="note' + (/우산/.test(n) ? ' rain' : /🎨/.test(n) ? ' pal' : '') + '">' + esc(n) + '</span>').join('');
       html += '<div class="card"><div class="card-head"><span class="no">추천 ' + (state.idx + 1) + ' / ' + res.combos.length + '</span>' +
         '<span class="warm">보온 <b>' + c.warm + '</b></span></div><div class="grid">' + parts.join('') + '</div>' + (c.acc ? accRow(c.acc) : '') +
         (notes ? '<div class="notes">' + notes + '</div>' : '') +
@@ -257,9 +265,10 @@
   }
 
   $app.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-like],[data-day],[data-slot],[data-purpose],[data-nav],[data-save],[data-cat]');
+    const t = e.target.closest('[data-del],[data-like],[data-day],[data-slot],[data-purpose],[data-nav],[data-save],[data-cat]');
     if (!t) return;
-    if (t.dataset.like) { return toggleLike(t.dataset.like); }
+    if (t.dataset.del) { return hideItem(t.dataset.del); }
+    else if (t.dataset.like) { return toggleLike(t.dataset.like); }
     else if (t.dataset.cat) { state.cat = t.dataset.cat; }
     else if (t.dataset.day) { state.day = t.dataset.day; state.idx = 0; }
     else if (t.dataset.slot) {
@@ -276,6 +285,26 @@
   function toast(msg) {
     const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
     document.body.appendChild(el); setTimeout(() => el.remove(), 2200);
+  }
+  async function post(body) {
+    const res = await fetch(apiUrl(), {
+      method: 'POST', redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(Object.assign({ token: store.get(LS.token) }, body))
+    });
+    const j = await res.json();
+    if (!j.ok) throw new Error(j.error || '저장 실패');
+    return j;
+  }
+  async function hideItem(id) {
+    const list = state.data.closet || [];
+    const idx = list.findIndex((c) => String(c['ID']) === id);
+    if (idx < 0) return;
+    const item = list[idx];
+    if (!confirm('"' + item['이름'] + '"을(를) 옷장에서 뺄까요?\n(시트의 사용 칸이 N이 돼요. Y로 바꾸면 되살아나요)')) return;
+    list.splice(idx, 1); store.set(LS.cache, JSON.stringify(state.data)); render();
+    try { await post({ action: 'hide', id: id }); toast('옷장에서 뺐어요: ' + item['이름']); }
+    catch (e) { list.splice(idx, 0, item); store.set(LS.cache, JSON.stringify(state.data)); render(); toast('삭제 못 했어요: ' + e.message); }
   }
   async function toggleLike(id) {
     const item = (state.data.closet || []).find((c) => String(c['ID']) === id);

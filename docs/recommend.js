@@ -13,6 +13,75 @@
     return '겨울';
   }
 
+
+  // ── 색: 색이름 → HEX (시트에 '색HEX' 칸이 있으면 우선) ──
+  const COLOR_HEX = {
+    '검정': '#1A1A1A', '블랙': '#1A1A1A', '네이비': '#1F2A44', '그레이': '#808080', '차콜': '#36454F', '흑백': '#808080',
+    '아이보리': '#F5F0E6', '오트밀': '#E8DFCF', '화이트': '#FFFFFF', '베이지': '#D8C7A8', '토프': '#9C8B7A', '카멜': '#C19A6B',
+    '브라운': '#5C4033', '카키': '#7D7A4F', '버건디': '#5A1F2E', '와인': '#5A1F2E', '네이비퍼플': '#3A2E4F',
+    '코발트블루': '#1F5FD0', '스카이블루': '#A9C8E8', '블루': '#4A6A9A', '핑크': '#E7A9B6', '연핑크': '#F3CCD3',
+    '진핑크': '#D2457A', '핑크베이지': '#E6C8BE', '라벤더': '#B7A9D0', '퍼플': '#7B5EA7', '그린': '#1F4D3A',
+    '화이트/블랙 스트라이프': '#808080'
+  };
+  function itemHex(x) {
+    if (x['색HEX'] && /^#?[0-9a-f]{6}$/i.test(String(x['색HEX']).trim())) return '#' + String(x['색HEX']).trim().replace('#', '');
+    const n = String(x['색이름'] || '').trim();
+    if (COLOR_HEX[n]) return COLOR_HEX[n];
+    const k = Object.keys(COLOR_HEX).sort((a, b) => b.length - a.length).find((key) => n.includes(key));
+    return k ? COLOR_HEX[k] : null;
+  }
+  function lab(hex) {
+    const c = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)));
+    const x = (c[0] * 0.4124 + c[1] * 0.3576 + c[2] * 0.1805) / 0.95047, y = c[0] * 0.2126 + c[1] * 0.7152 + c[2] * 0.0722, z = (c[0] * 0.0193 + c[1] * 0.1192 + c[2] * 0.9505) / 1.08883;
+    const f = (t) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+    return [116 * f(y) - 16, 500 * (f(x) - f(y)), 200 * (f(y) - f(z))];
+  }
+  const dE = (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+  const chroma = (p) => Math.hypot(p[1], p[2]);
+  const hue = (p) => (Math.atan2(p[2], p[1]) * 180 / Math.PI + 360) % 360;
+  // 트렌드 색과 '같은 색'인지: 색차 24 이하 + 채도·색상 비슷 (검정·네이비가 플럼으로 잡히지 않게)
+  function sameTrend(p, t) {
+    if (dE(p, t) > 24 || chroma(p) < chroma(t) * 0.5) return false;
+    if (chroma(t) < 6) return true;
+    let dh = Math.abs(hue(p) - hue(t)); dh = Math.min(dh, 360 - dh);
+    return dh <= 35;
+  }
+  // 아이템별 팔레트 정보 미리 계산
+  function paletteIndex(items, palette) {
+    if (!palette || !palette.colors) return null;
+    const trends = palette.colors.map((c) => ({ ...c, lab: lab(c.hex) }));
+    const map = new Map();
+    items.forEach((x) => {
+      const h = itemHex(x); if (!h) return map.set(x, { trends: [], lab: null });
+      const p = lab(h);
+      map.set(x, { lab: p, trends: trends.filter((t) => sameTrend(p, t.lab)).map((t) => t.id) });
+    });
+    return { trends: Object.fromEntries(trends.map((t) => [t.id, t])), map, palette };
+  }
+  // 한 벌의 팔레트 점수와 설명
+  function paletteScore(all, PI) {
+    if (!PI) return { score: 0, notes: [] };
+    let score = 0; const notes = [];
+    const info = all.map((x) => ({ x, ...(PI.map.get(x) || { trends: [], lab: null }) }));
+    const present = new Set(info.flatMap((i) => i.trends));
+    const nm = (id) => (PI.trends[id] || {}).name_ko || id;
+    (PI.palette.official_pairs || []).forEach((pr) => {
+      if (pr.colors.every((c) => present.has(c))) { score += 1.0; notes.push('🎨 ' + pr.colors.map(nm).join(' × ')); }
+    });
+    (PI.palette.suggested_pairs_with_basics || []).forEach((sp) => {
+      if (!present.has(sp.trend)) return;
+      const basics = sp.with.map(lab);
+      const mate = info.find((i) => i.lab && !i.trends.includes(sp.trend) && basics.some((b) => dE(i.lab, b) <= 15));
+      if (mate) { score += 0.5; notes.push('🎨 ' + nm(sp.trend) + ' + ' + mate.x['이름']); }
+    });
+    const rules = PI.palette.rules || {};
+    const accents = info.filter((i) => i.trends.some((t) => (PI.trends[t] || {}).role === 'accent'));
+    const maxA = rules.max_accent_per_outfit == null ? 1 : rules.max_accent_per_outfit;
+    if (accents.length > maxA) score -= 2 * (accents.length - maxA);
+    if (rules.accent_area === 'small') accents.forEach((i) => { if (i.x['레이어'] !== '소품') score -= 0.5; });
+    return { score, notes };
+  }
+
   // 결정적 난수 (같은 날·같은 조건이면 같은 순서)
   function hash(s) { let h = 2166136261; for (const c of s) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
 
@@ -51,6 +120,8 @@
     const scarves = acc.filter((a) => /스카프/.test(a['이름']));
     const mufflers = acc.filter((a) => /목도리/.test(a['이름']));
 
+    const PI = paletteIndex(items, data.palette);
+    const palW = num((data.settings || {})['팔레트 가중치'], 1);   // 설정 탭: 0이면 끔, 2면 두 배
     const bases = [];
     tops.forEach((t) => bottoms.forEach((b) => bases.push([t, b])));
     dresses.forEach((d) => bases.push([d]));
@@ -117,11 +188,13 @@
               else if (x === mid && outer) return;
               else score -= 1.5;
             });
+            // Pinterest 팔레트
+            const pal = paletteScore(all, PI); score += pal.score * palW;
             // 좋아요
             all.forEach((x) => { if (yes(x['좋아요'])) score += 1.5; });
 
             score += hash(ctx.day.date + opt.purpose + all.map((x) => x['ID']).join()) * 0.8;
-            combos.push({ base, mid, outer, acc: a, warm, score, removable, points });
+            combos.push({ base, mid, outer, acc: a, warm, score, removable, points, pal: palW > 0 ? pal.notes : [] });
           }
         }
       }
@@ -148,6 +221,7 @@
     if (ctx.bigSwing && c.removable) n.push('낮엔 ' + (c.outer || c.mid)['이름'] + ' 벗기');
     if (c.acc && /목도리/.test(c.acc['이름'])) n.push('바람 막는 목도리');
     if (ctx.wsdMax >= 5) n.push('바람 강함 ' + ctx.wsdMax + 'm/s');
+    (c.pal || []).slice(0, 2).forEach((p) => n.push(p));
     return n;
   }
 

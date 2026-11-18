@@ -1,0 +1,24 @@
+{
+  "source": "Pinterest Palette 2026 (business.pinterest.com/pinterest-palette)",
+  "version": "2026",
+  "colors": [
+    { "id": "cool_blue", "name_ko": "쿨 블루", "hex": "#D7EFFF", "role": "neutral" },
+    { "id": "jade", "name_ko": "제이드", "hex": "#AEB8A0", "role": "base" },
+    { "id": "plum_noir", "name_ko": "플럼 누아", "hex": "#351E28", "role": "base" },
+    { "id": "wasabi", "name_ko": "와사비", "hex": "#E9F056", "role": "accent" },
+    { "id": "persimmon", "name_ko": "퍼시먼", "hex": "#FF5C34", "role": "accent" }
+  ],
+  "official_pairs": [
+    { "id": "cool_wasabi", "colors": ["cool_blue", "wasabi"], "mood": "chilled chaos" },
+    { "id": "persimmon_plum", "colors": ["persimmon", "plum_noir"], "mood": "mystery + warmth" },
+    { "id": "persimmon_jade", "colors": ["persimmon", "jade"], "mood": "warm + calm" }
+  ],
+  "suggested_pairs_with_basics": [
+    { "trend": "plum_noir", "with": ["#36454F", "#000000", "#808080"], "note": "플럼 상의 + 차콜/블랙/그레이 하의" },
+    { "trend": "cool_blue", "with": ["#808080", "#1F2A44", "#FFFFFF"], "note": "아이스 블루를 뉴트럴처럼 사용" },
+    { "trend": "jade", "with": ["#F5F0E6", "#C19A6B", "#5C4033"], "note": "아이보리·카멜·브라운과 차분하게" },
+    { "trend": "wasabi", "with": ["#D2B48C", "#808080", "#1F2A44"], "note": "뉴트럴 코디에 소품 하나만" },
+    { "trend": "persimmon", "with": ["#F5F0E6", "#1F2A44", "#C19A6B"], "note": "아우터나 소품으로 포인트" }
+  ],
+  "rules": { "max_accent_per_outfit": 1, "accent_area": "small" }
+}
