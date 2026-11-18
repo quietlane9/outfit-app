@@ -16,7 +16,8 @@
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
   body{padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
   .wrap{max-width:480px;margin:0 auto;padding:18px 16px 40px}
-  header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+  header{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-bottom:14px}
+  header>div:first-child{min-width:0}
   h1{font-size:22px;margin:0;letter-spacing:-.5px}
   .sub{font-size:12px;color:var(--muted);margin-top:3px}
   .icon-btn{border:0;background:none;color:var(--muted);font-size:13px;padding:6px 4px;cursor:pointer}
@@ -80,6 +81,76 @@
   .closet{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
   .closet .piece .cap{font-size:11.5px;padding:5px 7px 7px}
   .closet .piece .role{font-size:10px}
+
+  .nav{display:flex;gap:2px;background:#ECE9E4;border-radius:10px;padding:3px}
+  .nav button{white-space:nowrap;border:0;background:none;font:inherit;font-size:12.5px;color:var(--muted);padding:6px 9px;border-radius:8px;cursor:pointer}
+  .nav button.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .closet .piece{cursor:pointer}
+  .badge{position:absolute;top:6px;right:7px;font-size:13px;color:#D2475A}
+  .sheet{position:fixed;inset:0;z-index:20;display:none}
+  .sheet.show{display:block}
+  .sheet-bg{position:absolute;inset:0;background:rgba(30,28,25,.38)}
+  .sheet-body{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--bg);border-radius:20px 20px 0 0;padding:14px 16px calc(20px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto}
+  .sheet-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .sheet-top b{font-size:16px}
+  .x{border:0;background:#ECE9E4;border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer;color:var(--muted)}
+  .detail-ph{background:#F6F5F3;border-radius:14px;overflow:hidden;display:flex;justify-content:center;align-items:center;height:260px}
+  .detail-ph img{max-height:100%;max-width:100%;object-fit:contain}
+  .detail-ph .swatch{width:120px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+  .chip{font-size:12px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 9px;display:inline-flex;align-items:center;gap:5px}
+  .chip i{width:12px;height:12px;border-radius:50%;display:inline-block;border:1px solid rgba(0,0,0,.1)}
+  .btns{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .btn{border:1.5px solid var(--line);background:var(--card);border-radius:12px;padding:11px 8px;font:inherit;font-size:14px;cursor:pointer;color:var(--ink)}
+  .btn.primary{grid-column:1/-1;background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .btn.danger{color:#B5453A}
+  .form label{display:block;font-size:12.5px;color:var(--muted);margin:12px 0 5px}
+  .form input[type=text]{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px;font:inherit;background:#fff}
+  .seg{display:flex;gap:6px}
+  .seg button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:9px 0;font:inherit;cursor:pointer}
+  .seg button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+  .colorrow{display:flex;gap:8px;align-items:center}
+  .colorrow input[type=text]{flex:1}
+  input[type=color]{width:46px;height:42px;border:1.5px solid var(--line);border-radius:10px;padding:2px;background:#fff;cursor:pointer}
+  .hint2{font-size:11.5px;color:var(--muted);margin-top:5px}
+  .coord-head{display:flex;gap:12px;align-items:center;background:var(--card);border-radius:14px;padding:10px;margin-bottom:12px}
+  .coord-head img,.coord-head .swatch{width:64px;height:64px;object-fit:contain;border-radius:10px;background:#F6F5F3;flex:none}
+  .coord-head .t{font-size:15px;font-weight:700}
+  .coord-head .s{font-size:12px;color:var(--muted)}
+  .back{border:0;background:none;color:var(--muted);font:inherit;font-size:13px;padding:0 0 10px;cursor:pointer}
+  .toggle{display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:12px;font-size:14px}
+  .sw{width:46px;height:26px;border-radius:13px;background:#D6D1C9;border:0;position:relative;cursor:pointer}
+  .sw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.15s}
+  .sw.on{background:var(--accent)} .sw.on::after{left:23px}
+  .warnbox{background:#FBF1E8;color:#8A4B22;border-radius:12px;padding:9px 12px;font-size:12.5px;margin-bottom:10px;line-height:1.5}
+  .clist .card{margin-bottom:12px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .grid3 .piece .cap{font-size:11px;padding:4px 6px 6px}
+  .piece.pin{box-shadow:0 0 0 2px var(--accent) inset}
+  .pal-card{background:var(--card);border-radius:16px;overflow:hidden;margin-bottom:12px}
+  .pal-sw{height:64px;display:flex;align-items:flex-end;padding:8px 12px;font-size:11px;letter-spacing:.5px}
+  .pal-in{padding:10px 12px 12px}
+  .pal-in .nm{font-size:15px;font-weight:700;display:flex;justify-content:space-between;align-items:center}
+  .prole{font-size:11px;font-weight:500;border-radius:999px;padding:2px 8px;background:#ECE9E4;color:var(--muted)}
+  .prole.accent{background:#FBE3DB;color:#B5453A}
+  .mini{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--muted)}
+  .mini i{width:20px;height:20px;border-radius:6px;display:inline-block;border:1px solid rgba(0,0,0,.08)}
+  .mine{display:flex;gap:6px;overflow-x:auto;margin-top:8px}
+  .mine button{border:0;padding:0;background:#F6F5F3;border-radius:10px;width:58px;height:58px;flex:none;cursor:pointer;overflow:hidden}
+  .mine img{width:100%;height:100%;object-fit:contain}
+  .pair{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:14px;padding:10px 12px;margin-bottom:8px;font-size:13px}
+  .pair .two{display:flex}
+  .pair .two i{width:34px;height:34px;border-radius:50%;border:2px solid #fff;margin-right:-8px}
+  .sec{font-size:15px;font-weight:700;margin:18px 2px 8px;display:flex;justify-content:space-between;align-items:center}
+  .sec small{font-weight:500;color:var(--muted);font-size:12px}
+  .ed{background:var(--card);border-radius:14px;padding:10px 12px;margin-bottom:10px}
+  .ed .row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
+  .ed input[type=text],.ed select{flex:1;min-width:0;padding:8px;border:1.5px solid var(--line);border-radius:9px;font:inherit;font-size:13px;background:#fff}
+  .ed .withs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .ed .withs span{display:inline-flex;align-items:center;gap:2px}
+  .ed input[type=color]{width:36px;height:34px}
+  .small{border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:6px 10px;font:inherit;font-size:12.5px;cursor:pointer;color:var(--ink)}
+  .small.del2{color:#B5453A}
   .msg{background:var(--card);border-radius:14px;padding:18px;font-size:14px;line-height:1.6}
   .msg input{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px;font:inherit;margin:6px 0 10px}
   .msg button{width:100%;padding:11px;border:0;border-radius:10px;background:var(--accent);color:#fff;font:inherit;font-weight:600}
@@ -94,10 +165,11 @@
       <h1>오늘의 옷</h1>
       <div class="sub" id="sub">불러오는 중…</div>
     </div>
-    <div><button class="icon-btn" id="view" title="옷장 보기">👚 옷장</button><button class="icon-btn" id="refresh" title="새로고침">⟳ 새로고침</button></div>
+    <div style="display:flex;align-items:center;gap:4px"><div class="nav" id="nav"><button data-go="rec" class="on">✨ 추천</button><button data-go="closet">👚 옷장</button><button data-go="palette">🎨 색</button></div><button class="icon-btn" id="refresh" title="새로고침">⟳</button></div>
   </header>
   <div id="app"></div>
 </div>
+<div class="sheet" id="sheet"><div class="sheet-bg" data-close="1"></div><div class="sheet-body" id="sheetBody"></div></div>
 
 <script src="config.js"></script>
 <script src="recommend.js"></script>
@@ -120,12 +192,20 @@
 
   const SLOT_NAMES = ['아침', '낮', '저녁'];
   const PURPOSES = ['일상', '운동', '모임', '격식'];
-  const state = { view: 'rec', cat: '전체', data: null, day: 'today', purpose: '일상', slots: { today: null, tomorrow: null }, idx: 0, stale: false };
+  const SEASONS = ['봄', '여름', '가을', '겨울'];
+  const state = {
+    view: 'rec', cat: '전체', data: null, day: 'today', purpose: '일상', slots: { today: null, tomorrow: null }, idx: 0, stale: false,
+    pin: null, ignoreW: false, palEdit: false, palDraft: null, sheet: null
+  };
   const $app = document.getElementById('app');
   const $sub = document.getElementById('sub');
+  const $sheet = document.getElementById('sheet');
+  const $sheetBody = document.getElementById('sheetBody');
 
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const r0 = (n) => Math.round(n);
+  const yes = (v) => String(v).toUpperCase() === 'Y';
+  const byId = (id) => (state.data.closet || []).find((c) => String(c['ID']) === String(id));
 
   function skyIcon(s) {
     const rain = s.precip && s.precip !== '없음';
@@ -140,7 +220,6 @@
   }
 
   function nowHour() { return Number(new Intl.DateTimeFormat('en-GB', { hour: '2-digit', hour12: false, timeZone: 'Asia/Seoul' }).format(new Date())); }
-
   function defaultSlots(day) {
     const d = state.data.weather.days[day];
     if (day !== 'today') return SLOT_NAMES.slice();
@@ -160,100 +239,82 @@
   fetch('images/manifest.json?t=' + Date.now(), { cache: 'no-store' })
     .then((r) => (r.ok ? r.json() : {})).then((m) => { IMGV = m || {}; if (state.data) render(); }).catch(() => {});
 
-  // Pinterest 팔레트 (docs/palette.json)
-  let PALETTE = null;
+  // 팔레트: 시트(팔레트 탭)가 있으면 그것, 없으면 docs/palette.json (Pinterest 2026 기본값)
+  let PALETTE_DEFAULT = null;
   fetch('palette.json?t=' + Date.now(), { cache: 'no-store' })
-    .then((r) => (r.ok ? r.json() : null)).then((p) => { PALETTE = p; if (state.data) render(); }).catch(() => {});
+    .then((r) => (r.ok ? r.json() : null)).then((p) => { PALETTE_DEFAULT = p; if (state.data) render(); }).catch(() => {});
+  const palette = () => Outfit.normalizePalette((state.data && state.data.palette) || PALETTE_DEFAULT);
 
-  const SWATCH = { '퍼플': '#7B5EA7', '브라운': '#7A5236', '검정': '#222', '그레이': '#8f8f8f', '네이비': '#2D3A55', '베이지': '#D8C7A8', '아이보리': '#EFE9DC', '핑크': '#E7A9B6', '연핑크': '#F3CCD3', '진핑크': '#D2457A', '버건디': '#6B1F2E', '화이트/블랙 스트라이프': 'repeating-linear-gradient(0deg,#fff 0 6px,#222 6px 12px)' };
+  // 옷 색 (사진 없을 때 동그라미, 상세 화면 칩)
+  const STRIPE = { '화이트/블랙 스트라이프': 'repeating-linear-gradient(0deg,#fff 0 6px,#222 6px 12px)' };
+  const RAINBOW = 'conic-gradient(#D9826B,#E7C36A,#7FB08A,#6C8FC7,#A07BC0,#D9826B)';
+  const colorOf = (item) => STRIPE[item['색이름']] || Outfit.itemHex(item) || RAINBOW;
+
   function piece(item, role, opts) {
+    opts = opts || {};
     const img = item['사진'] ? '<img loading="lazy" src="' + esc(imgSrc(item['사진'])) + '" alt="' + esc(item['이름']) + '">' : '';
-    let ph = img;
-    if (!img) {
-      const c = SWATCH[item['색이름']];
-      const bg = c || 'conic-gradient(#D9826B,#E7C36A,#7FB08A,#6C8FC7,#A07BC0,#D9826B)';
-      ph = '<div class="swatch" style="background:' + bg + '"></div>';
-    }
-    const liked = String(item['좋아요']).toUpperCase() === 'Y';
-    const heart = '<button class="like' + (liked ? ' on' : '') + '" data-like="' + esc(item['ID']) + '" aria-label="좋아요">' + (liked ? '♥' : '♡') + '</button>';
-    const del = opts && opts.del ? '<button class="del" data-del="' + esc(item['ID']) + '" aria-label="옷장에서 삭제">🗑</button>' : '';
-    return '<div class="piece">' + heart + del + '<div class="ph">' + ph + '</div><div class="cap"><span class="role">' + role + '</span>' + esc(item['이름']) + '</div></div>';
+    const ph = img || '<div class="swatch" style="background:' + colorOf(item) + '"></div>';
+    const liked = yes(item['좋아요']);
+    const heart = opts.like ? '<button class="like' + (liked ? ' on' : '') + '" data-like="' + esc(item['ID']) + '" aria-label="좋아요">' + (liked ? '♥' : '♡') + '</button>'
+      : liked ? '<span class="badge">♥</span>' : '';
+    return '<div class="piece' + (opts.pin ? ' pin' : '') + '"' + (opts.open ? ' data-open="' + esc(item['ID']) + '"' : '') + '>' + heart +
+      '<div class="ph">' + ph + '</div><div class="cap"><span class="role">' + role + '</span>' + esc(item['이름']) + '</div></div>';
   }
-
   function accRow(item) {
-    const c = SWATCH[item['색이름']] || 'conic-gradient(#D9826B,#E7C36A,#7FB08A,#6C8FC7,#A07BC0,#D9826B)';
-    const ph = item['사진'] ? '<img src="' + esc(imgSrc(item['사진'])) + '" alt="">' : '<span class="dot" style="background:' + c + '"></span>';
+    const ph = item['사진'] ? '<img src="' + esc(imgSrc(item['사진'])) + '" alt="">' : '<span class="dot" style="background:' + colorOf(item) + '"></span>';
     return '<div class="acc">' + ph + '<span><span class="role">소품</span>' + esc(item['이름']) + '</span></div>';
   }
+  const roleOf = (x, c) => x['레이어'] === '원피스' ? '원피스' : x['레이어'] === '하의' ? '하의' : x['레이어'] === '이너' ? '상의'
+    : x['레이어'] === '아우터' ? '아우터' : x['레이어'] === '미들' ? (c && c.outer ? '안에' : '겉옷') : '소품';
+  const noteHtml = (list) => list.map((n) => '<span class="note' + (/우산/.test(n) ? ' rain' : /🎨/.test(n) ? ' pal' : '') + '">' + esc(n) + '</span>').join('');
 
-  const GROUPS = [
-    ['아우터', (c) => c['레이어'] === '아우터'],
-    ['카디건·재킷', (c) => c['레이어'] === '미들'],
-    ['상의', (c) => c['레이어'] === '이너'],
-    ['원피스', (c) => c['레이어'] === '원피스'],
-    ['하의', (c) => c['레이어'] === '하의'],
-    ['소품', (c) => c['레이어'] === '소품']
-  ];
-  function renderCloset() {
-    const items = (state.data.closet || []).filter((c) => c['ID']).sort((a, b) => String(a['ID']).localeCompare(String(b['ID'])));
-    const groups = GROUPS.map(([name, fn]) => [name, items.filter(fn)]).filter(([, l]) => l.length);
-    const others = items.filter((c) => !GROUPS.some(([, fn]) => fn(c)));
-    if (others.length) groups.push(['기타', others]);
-    $sub.textContent = '내 옷장 · ' + items.length + '개';
-    let html = '<div class="cats">' + [['전체', items]].concat(groups).map(([n, l]) =>
-      '<button data-cat="' + n + '" class="' + (state.cat === n ? 'on' : '') + '">' + n + '<small>' + l.length + '</small></button>').join('') + '</div>';
-    groups.filter(([n]) => state.cat === '전체' || state.cat === n).forEach(([n, l]) => {
-      html += '<div class="group"><h2>' + n + ' <small>' + l.length + '개</small></h2><div class="closet">' +
-        l.map((c) => piece(c, esc(c['ID']) + ' · 보온 ' + esc(c['보온(1-5)']) + ' · 격식 ' + esc(c['격식(1-3)']), { del: true })).join('') + '</div></div>';
-    });
-    $app.innerHTML = html;
-  }
-
-  function render() {
-    if (state.view === 'closet') return renderCloset();
-    document.getElementById('view').textContent = '👚 옷장';
-    const d = state.data;
-    const days = d.weather.days;
+  /* ───────── 날씨·목적 컨트롤 (추천·코디 공용) ───────── */
+  function controls() {
+    const d = state.data, days = d.weather.days;
     const fmt = (ymd) => Number(ymd.slice(4, 6)) + '/' + Number(ymd.slice(6, 8));
     if (!state.slots[state.day]) state.slots[state.day] = defaultSlots(state.day);
     const sel = state.slots[state.day];
-    const res = Outfit.recommend(Object.assign({}, d, { palette: PALETTE }), { day: state.day, purpose: state.purpose, slots: sel });
-    const ctx = res.ctx;
-    if (state.idx >= res.combos.length) state.idx = 0;
-    const c = res.combos[state.idx];
-
-    $sub.innerHTML = esc(d.weather.region || '') + ' · ' + (d.weather.base.time.slice(0, 2)) + '시 발표' + (state.stale ? ' <span class="stale">· 저장된 정보</span>' : '');
-
     let html = '<div class="tabs">' + ['today', 'tomorrow'].map((k) =>
       '<button data-day="' + k + '" class="' + (state.day === k ? 'on' : '') + '">' + (k === 'today' ? '오늘' : '내일') + ' <small>' + fmt(days[k].date) + '</small></button>').join('') + '</div>';
-
     html += '<div class="slots">' + SLOT_NAMES.map((n) => {
       const s = days[state.day].slots[n];
       if (!s) return '<div class="slot past"><div class="nm">' + n + '</div><div class="r">정보 없음</div></div>';
-      const past = isPast(state.day, n);
-      const on = sel.includes(n);
+      const past = isPast(state.day, n), on = sel.includes(n);
       const rain = s.precip !== '없음' || s.popMax >= 60;
       return '<div class="slot ' + (past ? 'past' : on ? 'on' : 'off') + '" data-slot="' + n + '">' +
         '<div class="nm">' + n + ' ' + s.hours[0] + '–' + s.hours[s.hours.length - 1] + '시</div>' + skyIcon(s) +
         '<div class="t">' + r0(s.feelsMin) + (r0(s.feelsMax) !== r0(s.feelsMin) ? '~' + r0(s.feelsMax) : '') + '°<small> 체감</small></div>' +
         '<div class="r' + (rain ? ' rain' : '') + '">' + (rain ? (s.precip !== '없음' ? s.precip + ' ' : '') + s.popMax + '%' : '강수 ' + s.popMax + '%') + (s.wsdMax >= 4 ? ' · 바람' : '') + '</div></div>';
     }).join('') + '</div><div class="hint">밖에 있는 시간대를 눌러 고르세요</div>';
-
-    html += '<div class="purposes">' + PURPOSES.map((p) => '<button data-purpose="' + p + '" class="' + (state.purpose === p ? 'on' : '') + '">' + p + '</button>').join('') + '</div>';
-
-    html += '<div class="summary">체감 <b>' + r0(ctx.feelsMin) + '~' + r0(ctx.feelsMax) + '°</b>' +
+    return html;
+  }
+  const purposeBar = () => '<div class="purposes">' + PURPOSES.map((p) => '<button data-purpose="' + p + '" class="' + (state.purpose === p ? 'on' : '') + '">' + p + '</button>').join('') + '</div>';
+  function summary(ctx) {
+    if (ctx.ignoreWeather) return '<div class="summary">날씨 무시 · <b>' + esc(ctx.virtualSeason) + '</b> 기준(' + ctx.design + '°)으로 맞춤 · 보온 목표 <b>' + ctx.warmMin + '~' + ctx.warmMax + '</b></div>';
+    return '<div class="summary">체감 <b>' + r0(ctx.feelsMin) + '~' + r0(ctx.feelsMax) + '°</b>' +
       (state.purpose === '운동' ? ' (운동 후 귀가 고려 ' + r0(ctx.design) + '°)' : '') +
       ' · 보온 목표 <b>' + ctx.warmMin + '~' + ctx.warmMax + '</b> · ' + esc(ctx.rule['겉옷'] || '') +
       (ctx.bigSwing ? ' · 일교차 ' + r0(ctx.swing) + '°' : '') + '</div>';
+  }
+  const runRec = (extra) => Outfit.recommend(Object.assign({}, state.data, { palette: palette() }),
+    Object.assign({ day: state.day, purpose: state.purpose, slots: state.slots[state.day] || defaultSlots(state.day) }, extra || {}));
 
-    if (!c) {
-      html += '<div class="msg">조건에 맞는 조합이 없어요. 시간대나 목적을 바꿔보세요.</div>';
-    } else {
+  /* ───────── 추천 ───────── */
+  function renderRec() {
+    const d = state.data;
+    $sub.innerHTML = esc(d.weather.region || '') + ' · ' + (d.weather.base.time.slice(0, 2)) + '시 발표' + (state.stale ? ' <span class="stale">· 저장된 정보</span>' : '');
+    let html = controls() + purposeBar();
+    const res = runRec(); const ctx = res.ctx;
+    if (state.idx >= res.combos.length) state.idx = 0;
+    const c = res.combos[state.idx];
+    html += summary(ctx);
+    if (!c) html += '<div class="msg">조건에 맞는 조합이 없어요. 시간대나 목적을 바꿔보세요.</div>';
+    else {
       const parts = [];
-      if (c.outer) parts.push(piece(c.outer, '아우터'));
-      if (c.mid) parts.push(piece(c.mid, c.outer ? '안에' : '겉옷'));
-      c.base.forEach((x) => parts.push(piece(x, x['레이어'] === '원피스' ? '원피스' : x['레이어'] === '하의' ? '하의' : '상의')));
-      const notes = c.notes.map((n) => '<span class="note' + (/우산/.test(n) ? ' rain' : /🎨/.test(n) ? ' pal' : '') + '">' + esc(n) + '</span>').join('');
+      if (c.outer) parts.push(piece(c.outer, '아우터', { like: true }));
+      if (c.mid) parts.push(piece(c.mid, c.outer ? '안에' : '겉옷', { like: true }));
+      c.base.forEach((x) => parts.push(piece(x, roleOf(x), { like: true })));
+      const notes = noteHtml(c.notes);
       html += '<div class="card"><div class="card-head"><span class="no">추천 ' + (state.idx + 1) + ' / ' + res.combos.length + '</span>' +
         '<span class="warm">보온 <b>' + c.warm + '</b></span></div><div class="grid">' + parts.join('') + '</div>' + (c.acc ? accRow(c.acc) : '') +
         (notes ? '<div class="notes">' + notes + '</div>' : '') +
@@ -264,12 +325,237 @@
     $app.innerHTML = html;
   }
 
-  $app.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-del],[data-like],[data-day],[data-slot],[data-purpose],[data-nav],[data-save],[data-cat]');
+  /* ───────── 옷장 ───────── */
+  const GROUPS = [
+    ['아우터', (c) => c['레이어'] === '아우터'], ['카디건·재킷', (c) => c['레이어'] === '미들'], ['상의', (c) => c['레이어'] === '이너'],
+    ['원피스', (c) => c['레이어'] === '원피스'], ['하의', (c) => c['레이어'] === '하의'], ['소품', (c) => c['레이어'] === '소품']
+  ];
+  function renderCloset() {
+    const items = (state.data.closet || []).filter((c) => c['ID']).sort((a, b) => String(a['ID']).localeCompare(String(b['ID'])));
+    const groups = GROUPS.map(([name, fn]) => [name, items.filter(fn)]).filter(([, l]) => l.length);
+    const others = items.filter((c) => !GROUPS.some(([, fn]) => fn(c)));
+    if (others.length) groups.push(['기타', others]);
+    $sub.textContent = '내 옷장 · ' + items.length + '개 · 옷을 누르면 수정·코디';
+    let html = '<div class="cats">' + [['전체', items]].concat(groups).map(([n, l]) =>
+      '<button data-cat="' + n + '" class="' + (state.cat === n ? 'on' : '') + '">' + n + '<small>' + l.length + '</small></button>').join('') + '</div>';
+    groups.filter(([n]) => state.cat === '전체' || state.cat === n).forEach(([n, l]) => {
+      html += '<div class="group"><h2>' + n + ' <small>' + l.length + '개</small></h2><div class="closet">' +
+        l.map((c) => piece(c, esc(c['ID']) + ' · 보온 ' + esc(c['보온(1-5)']) + ' · 격식 ' + esc(c['격식(1-3)']), { open: true })).join('') + '</div></div>';
+    });
+    $app.innerHTML = html;
+  }
+
+  /* ───────── 옷 상세 · 수정 (아래에서 올라오는 시트) ───────── */
+  function openSheet(mode, id) { state.sheet = { mode: mode, id: id }; renderSheet(); $sheet.classList.add('show'); }
+  function closeSheet() { state.sheet = null; $sheet.classList.remove('show'); $sheetBody.innerHTML = ''; }
+  function trendsOf(item) {
+    const p = palette(); if (!p) return [];
+    const m = Outfit.paletteMatches([item], p);
+    return p.colors.filter((c) => (m[c.id] || []).length);
+  }
+  function renderSheet() {
+    const st = state.sheet; if (!st) return;
+    const item = byId(st.id); if (!item) return closeSheet();
+    const img = item['사진'] ? '<img src="' + esc(imgSrc(item['사진'])) + '" alt="">' : '<div class="swatch" style="background:' + colorOf(item) + '"></div>';
+    let html = '<div class="sheet-top"><b>' + esc(item['ID']) + ' ' + (st.mode === 'edit' ? '수정' : '') + '</b><button class="x" data-close="1">✕</button></div>';
+    if (st.mode === 'detail') {
+      const liked = yes(item['좋아요']);
+      const tr = trendsOf(item).map((c) => '<span class="chip"><i style="background:' + c.hex + '"></i>🎨 ' + esc(c.name_ko) + '</span>').join('');
+      html += '<div class="detail-ph">' + img + '</div>' +
+        '<div style="font-size:18px;font-weight:700;margin-top:12px">' + esc(item['이름']) + '</div>' +
+        '<div class="chips"><span class="chip">' + esc(item['레이어'] || '') + '</span>' +
+        '<span class="chip"><i style="background:' + colorOf(item) + '"></i>' + esc(item['색이름'] || '') + ' · ' + esc(item['색계열'] || '') + '</span>' +
+        '<span class="chip">보온 ' + esc(item['보온(1-5)']) + '</span><span class="chip">격식 ' + esc(item['격식(1-3)']) + '</span>' +
+        '<span class="chip">' + esc(item['계절'] || '계절 미정') + '</span>' + tr + '</div>' +
+        '<div class="btns"><button class="btn primary" data-act="coord">✨ 이 옷으로 코디</button>' +
+        '<button class="btn" data-act="edit">✏️ 수정</button><button class="btn" data-act="like">' + (liked ? '♥ 좋아요 해제' : '♡ 좋아요') + '</button>' +
+        '<button class="btn danger" data-act="hide" style="grid-column:1/-1">🗑 옷장에서 빼기</button></div>';
+    } else {
+      const seasons = String(item['계절'] || '');
+      const hex = (Outfit.itemHex(item) || '#888888').toUpperCase();
+      html += '<div class="form" id="editForm">' +
+        '<label>이름</label><input type="text" id="f_name" value="' + esc(item['이름']) + '">' +
+        '<label>보온 <small>1 얇음 ~ 5 매우 따뜻함</small></label><div class="seg" data-seg="보온(1-5)">' +
+        [1, 2, 3, 4, 5].map((v) => '<button type="button" data-v="' + v + '" class="' + (Number(item['보온(1-5)']) === v ? 'on' : '') + '">' + v + '</button>').join('') + '</div>' +
+        '<label>격식 <small>1 캐주얼 · 2 단정 · 3 격식</small></label><div class="seg" data-seg="격식(1-3)">' +
+        [1, 2, 3].map((v) => '<button type="button" data-v="' + v + '" class="' + (Number(item['격식(1-3)']) === v ? 'on' : '') + '">' + v + '</button>').join('') + '</div>' +
+        '<label>계절 <small>여러 개 선택</small></label><div class="seg" data-multi="계절">' +
+        SEASONS.map((q) => '<button type="button" data-v="' + q + '" class="' + (seasons.includes(q) ? 'on' : '') + '">' + q + '</button>').join('') + '</div>' +
+        '<label>색</label><div class="colorrow"><input type="text" id="f_cname" list="cnames" value="' + esc(item['색이름'] || '') + '" placeholder="색이름 (예: 버건디)">' +
+        '<input type="color" id="f_hex" value="' + hex + '"></div>' +
+        '<datalist id="cnames">' + Object.keys(Outfit.COLOR_HEX).map((k) => '<option value="' + esc(k) + '">').join('') + '</datalist>' +
+        '<div class="hint2">색이름은 추천·표시용, 오른쪽 색은 팔레트 매칭에 쓰는 실제 색이에요. 목록에 있는 색이름을 고르면 색이 자동으로 맞춰져요.</div>' +
+        '<div class="btns" style="margin-top:16px"><button class="btn" data-act="cancel">취소</button><button class="btn" data-act="save" style="background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600">저장</button></div></div>';
+    }
+    $sheetBody.innerHTML = html;
+    if (st.mode === 'edit') {
+      const hexEl = document.getElementById('f_hex'); let touched = false;
+      hexEl.addEventListener('input', () => { touched = true; });
+      document.getElementById('f_cname').addEventListener('input', (e) => {
+        const h = Outfit.COLOR_HEX[e.target.value.trim()]; if (h && !touched) hexEl.value = h.toUpperCase();
+      });
+    }
+  }
+  async function saveEdit() {
+    const item = byId(state.sheet.id); if (!item) return;
+    const segVal = (k) => { const b = $sheetBody.querySelector('[data-seg="' + k + '"] button.on'); return b ? Number(b.dataset.v) : item[k]; };
+    const seasons = SEASONS.filter((q) => $sheetBody.querySelector('[data-multi="계절"] button.on[data-v="' + q + '"]')).join('');
+    const fields = {
+      '이름': document.getElementById('f_name').value.trim() || item['이름'],
+      '보온(1-5)': segVal('보온(1-5)'), '격식(1-3)': segVal('격식(1-3)'), '계절': seasons,
+      '색이름': document.getElementById('f_cname').value.trim(), '색HEX': document.getElementById('f_hex').value.toUpperCase()
+    };
+    const prev = Object.assign({}, item);
+    Object.assign(item, fields); store.set(LS.cache, JSON.stringify(state.data));
+    state.sheet.mode = 'detail'; renderSheet(); render();
+    try { await post({ action: 'update', id: item['ID'], fields: fields }); toast('저장했어요: ' + item['이름']); }
+    catch (e) { Object.keys(item).forEach((k) => delete item[k]); Object.assign(item, prev); store.set(LS.cache, JSON.stringify(state.data)); renderSheet(); render(); toast('저장 못 했어요: ' + e.message); }
+  }
+
+  /* ───────── 이 옷으로 코디 ───────── */
+  function renderCoord() {
+    const item = byId(state.pin);
+    if (!item) { state.view = 'closet'; return render(); }
+    $sub.textContent = '이 옷으로 코디';
+    const img = item['사진'] ? '<img src="' + esc(imgSrc(item['사진'])) + '" alt="">' : '<div class="swatch" style="background:' + colorOf(item) + '"></div>';
+    let html = '<button class="back" data-go="closet">← 옷장으로</button>' +
+      '<div class="coord-head">' + img + '<div><div class="t">' + esc(item['이름']) + '</div><div class="s">이 옷을 넣은 코디 ' + '</div></div></div>' +
+      '<div class="toggle"><span>날씨 무시 <small style="color:var(--muted)">(옷 계절 기준)</small></span><button class="sw' + (state.ignoreW ? ' on' : '') + '" data-ignore="1" aria-label="날씨 무시"></button></div>';
+    if (!state.ignoreW) html += controls();
+    html += purposeBar();
+    const res = runRec({ pin: item['ID'], ignoreWeather: state.ignoreW });
+    html += summary(res.ctx);
+    if (res.ctx.pinWarn && res.ctx.pinWarn.length) html += '<div class="warnbox">⚠ ' + res.ctx.pinWarn.map(esc).join('<br>⚠ ') + '</div>';
+    if (!res.combos.length) html += '<div class="msg">이 옷으로 맞출 조합이 없어요. 날씨 무시를 켜보세요.</div>';
+    html += '<div class="clist">' + res.combos.map((c, i) => {
+      const parts = [];
+      if (c.outer) parts.push(piece(c.outer, '아우터', { pin: c.outer === item }));
+      if (c.mid) parts.push(piece(c.mid, c.outer ? '안에' : '겉옷', { pin: c.mid === item }));
+      c.base.forEach((x) => parts.push(piece(x, roleOf(x), { pin: x === item })));
+      if (c.acc) parts.push(piece(c.acc, '소품', { pin: c.acc === item }));
+      const notes = noteHtml(c.notes);
+      return '<div class="card"><div class="card-head"><span class="no">코디 ' + (i + 1) + '</span><span class="warm">보온 <b>' + c.warm + '</b></span></div>' +
+        '<div class="grid3">' + parts.join('') + '</div>' + (notes ? '<div class="notes">' + notes + '</div>' : '') + '</div>';
+    }).join('') + '</div>';
+    $app.innerHTML = html;
+  }
+
+  /* ───────── 팔레트 보기 · 편집 ───────── */
+  const ROLE_KO = { base: '기본', neutral: '뉴트럴', accent: '강조' };
+  function renderPalette() {
+    const p = state.palEdit ? state.palDraft : palette();
+    if (!p) { $app.innerHTML = '<div class="msg">팔레트를 불러오는 중이에요…</div>'; return; }
+    const fromSheet = !!(state.data && state.data.palette);
+    $sub.textContent = (fromSheet ? '내 팔레트 (시트)' : (p.source ? p.source.replace(/\s*\(.*\)/, '') : 'Pinterest Palette')) + (p.version && !String(p.source).includes(p.version) ? ' ' + p.version : '');
+    if (state.palEdit) return renderPaletteEdit(p);
+    const mine = Outfit.paletteMatches(state.data.closet || [], p);
+    const nm = (id) => (p.colors.find((c) => c.id === id) || {}).name_ko || id;
+    const hx = (id) => (p.colors.find((c) => c.id === id) || {}).hex || '#ccc';
+    const light = (h) => { const n = parseInt(h.slice(1), 16); return ((n >> 16) * 299 + ((n >> 8) & 255) * 587 + (n & 255) * 114) / 1000 > 150; };
+    let html = '<div class="sec">트렌드 색 <button class="small" data-pal="edit">✏️ 편집</button></div>';
+    html += p.colors.map((c) => {
+      const my = mine[c.id] || [];
+      return '<div class="pal-card"><div class="pal-sw" style="background:' + c.hex + ';color:' + (light(c.hex) ? '#2B2A28' : '#fff') + '">' + esc(c.hex.toUpperCase()) + '</div>' +
+        '<div class="pal-in"><div class="nm">' + esc(c.name_ko) + '<span class="prole' + (c.role === 'accent' ? ' accent' : '') + '">' + (ROLE_KO[c.role] || c.role) + '</span></div>' +
+        (c.with.length ? '<div class="mini">어울리는 베이직 ' + c.with.map((h) => '<i style="background:' + esc(h) + '" title="' + esc(h) + '"></i>').join('') + '</div>' : '') +
+        (c.note ? '<div class="mini">' + esc(c.note) + '</div>' : '') +
+        '<div class="mini">내 옷 ' + (my.length ? my.length + '개' : '없음') + '</div>' +
+        (my.length ? '<div class="mine">' + my.map((x) => '<button data-open="' + esc(x['ID']) + '" title="' + esc(x['이름']) + '">' +
+          (x['사진'] ? '<img src="' + esc(imgSrc(x['사진'])) + '" alt="">' : '<div class="swatch" style="background:' + colorOf(x) + ';width:70%;margin:15%"></div>') + '</button>').join('') + '</div>' : '') +
+        '</div></div>';
+    }).join('');
+    html += '<div class="sec">추천 페어 <small>한 코디에 두 색을 같이</small></div>';
+    html += (p.official_pairs.length ? p.official_pairs.map((pr) => '<div class="pair"><div class="two"><i style="background:' + hx(pr.colors[0]) + '"></i><i style="background:' + hx(pr.colors[1]) + '"></i></div>' +
+      '<div style="margin-left:10px"><b>' + esc(nm(pr.colors[0])) + ' × ' + esc(nm(pr.colors[1])) + '</b><div style="color:var(--muted);font-size:12px">' + esc(pr.mood) + '</div></div></div>').join('') : '<div class="msg">페어가 없어요.</div>');
+    html += '<div class="hint2" style="margin-top:12px">강조색은 한 코디에 ' + ((p.rules || {}).max_accent_per_outfit || 1) + '개까지, 소품 위주로 추천해요. 설정 탭의 "팔레트 가중치"로 영향 크기를 조절할 수 있어요.</div>';
+    $app.innerHTML = html;
+  }
+  function renderPaletteEdit(p) {
+    const opts = (sel) => p.colors.map((c) => '<option value="' + esc(c.id) + '"' + (c.id === sel ? ' selected' : '') + '>' + esc(c.name_ko) + '</option>').join('');
+    let html = '<div class="sec">팔레트 편집 <span><button class="small" data-pal="cancel">취소</button> <button class="small" data-pal="save" style="background:var(--accent);color:#fff;border-color:var(--accent)">저장</button></span></div>';
+    html += p.colors.map((c, i) => '<div class="ed">' +
+      '<div class="row"><input type="color" data-pc="' + i + '" data-f="hex" value="' + esc(c.hex.toUpperCase()) + '"><input type="text" data-pc="' + i + '" data-f="name_ko" value="' + esc(c.name_ko) + '" placeholder="색 이름">' +
+      '<select data-pc="' + i + '" data-f="role">' + ['base', 'neutral', 'accent'].map((r) => '<option value="' + r + '"' + (c.role === r ? ' selected' : '') + '>' + ROLE_KO[r] + '</option>').join('') + '</select>' +
+      '<button class="small del2" data-pal="delc" data-i="' + i + '">✕</button></div>' +
+      '<div class="withs"><small style="color:var(--muted)">어울리는 베이직</small>' + c.with.map((h, j) => '<span><input type="color" data-pw="' + i + ':' + j + '" value="' + esc(h.toUpperCase()) + '"><button class="small del2" data-pal="delw" data-i="' + i + '" data-j="' + j + '">✕</button></span>').join('') +
+      '<button class="small" data-pal="addw" data-i="' + i + '">＋</button></div>' +
+      '<div class="row" style="margin-top:6px"><input type="text" data-pc="' + i + '" data-f="note" value="' + esc(c.note) + '" placeholder="메모 (예: 플럼 상의 + 차콜 하의)"></div></div>').join('');
+    html += '<button class="small" data-pal="addc">＋ 색 추가</button>';
+    html += '<div class="sec">추천 페어</div>' + p.official_pairs.map((pr, i) => '<div class="ed"><div class="row">' +
+      '<select data-pp="' + i + '" data-f="0">' + opts(pr.colors[0]) + '</select><span>×</span><select data-pp="' + i + '" data-f="1">' + opts(pr.colors[1]) + '</select>' +
+      '<button class="small del2" data-pal="delp" data-i="' + i + '">✕</button></div>' +
+      '<div class="row"><input type="text" data-pp="' + i + '" data-f="mood" value="' + esc(pr.mood) + '" placeholder="무드"></div></div>').join('');
+    html += '<button class="small" data-pal="addp">＋ 페어 추가</button>';
+    html += '<div class="hint2" style="margin-top:14px">저장하면 시트에 "팔레트색"·"팔레트페어" 탭으로 저장돼요. 시트에서 직접 고쳐도 돼요.</div>' +
+      '<div style="margin-top:10px"><button class="small" data-pal="reset">↺ Pinterest 2026 기본값으로</button></div>';
+    $app.innerHTML = html;
+  }
+  async function palAction(a, el) {
+    const D = state.palDraft;
+    if (a === 'edit') { state.palDraft = JSON.parse(JSON.stringify(palette())); state.palEdit = true; }
+    else if (a === 'cancel') { state.palEdit = false; state.palDraft = null; }
+    else if (a === 'addc') D.colors.push({ id: 'c' + Date.now().toString(36), name_ko: '새 색', hex: '#888888', role: 'base', with: [], note: '' });
+    else if (a === 'delc') { const id = D.colors[+el.dataset.i].id; D.colors.splice(+el.dataset.i, 1); D.official_pairs = D.official_pairs.filter((pr) => !pr.colors.includes(id)); }
+    else if (a === 'addw') D.colors[+el.dataset.i].with.push('#808080');
+    else if (a === 'delw') D.colors[+el.dataset.i].with.splice(+el.dataset.j, 1);
+    else if (a === 'addp') { if (D.colors.length < 2) return toast('색이 2개 이상 있어야 해요'); D.official_pairs.push({ colors: [D.colors[0].id, D.colors[1].id], mood: '' }); }
+    else if (a === 'delp') D.official_pairs.splice(+el.dataset.i, 1);
+    else if (a === 'reset') { if (!PALETTE_DEFAULT) return; state.palDraft = JSON.parse(JSON.stringify(Outfit.normalizePalette(PALETTE_DEFAULT))); }
+    else if (a === 'save') {
+      const prev = state.data.palette;
+      state.data.palette = Outfit.normalizePalette(D); state.palEdit = false; state.palDraft = null;
+      store.set(LS.cache, JSON.stringify(state.data)); render();
+      try { await post({ action: 'palette', palette: state.data.palette }); toast('팔레트를 저장했어요'); }
+      catch (e) { state.data.palette = prev; store.set(LS.cache, JSON.stringify(state.data)); render(); toast('저장 못 했어요: ' + e.message); }
+      return;
+    }
+    render();
+  }
+  // 편집 입력값은 다시 그리지 않고 초안에 바로 반영
+  $app.addEventListener('input', (e) => {
+    const t = e.target, D = state.palDraft; if (!D) return;
+    if (t.dataset.pc) D.colors[+t.dataset.pc][t.dataset.f] = t.value;
+    else if (t.dataset.pw) { const [i, j] = t.dataset.pw.split(':').map(Number); D.colors[i].with[j] = t.value; }
+    else if (t.dataset.pp) { const pr = D.official_pairs[+t.dataset.pp]; if (t.dataset.f === 'mood') pr.mood = t.value; else pr.colors[+t.dataset.f] = t.value; }
+  });
+  $app.addEventListener('change', (e) => { if (e.target.tagName === 'SELECT' && e.target.dataset.pc) { /* 역할 변경 */ } });
+
+  /* ───────── 화면 전환 ───────── */
+  function render() {
+    document.querySelectorAll('#nav button').forEach((b) => b.classList.toggle('on', b.dataset.go === (state.view === 'coord' ? 'closet' : state.view)));
+    if (state.view === 'closet') return renderCloset();
+    if (state.view === 'coord') return renderCoord();
+    if (state.view === 'palette') return renderPalette();
+    return renderRec();
+  }
+  function go(view) { state.view = view; state.palEdit = false; state.palDraft = null; render(); window.scrollTo(0, 0); }
+
+  document.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-go],[data-open],[data-close],[data-act],[data-like],[data-day],[data-slot],[data-purpose],[data-nav],[data-save],[data-cat],[data-ignore],[data-pal],[data-seg] button,[data-multi] button');
     if (!t) return;
-    if (t.dataset.del) { return hideItem(t.dataset.del); }
-    else if (t.dataset.like) { return toggleLike(t.dataset.like); }
-    else if (t.dataset.cat) { state.cat = t.dataset.cat; }
+    if (!state.data && !t.dataset.save) return;
+    const segBox = t.parentElement && (t.parentElement.dataset.seg || t.parentElement.dataset.multi) ? t.parentElement : null;
+    if (segBox && t.tagName === 'BUTTON' && !t.dataset.act) {
+      if (segBox.dataset.seg) segBox.querySelectorAll('button').forEach((b) => b.classList.toggle('on', b === t));
+      else t.classList.toggle('on');
+      return;
+    }
+    if (t.dataset.go) return go(t.dataset.go);
+    if (t.dataset.open) return openSheet('detail', t.dataset.open);
+    if (t.dataset.close) return closeSheet();
+    if (t.dataset.act) {
+      const a = t.dataset.act, id = state.sheet && state.sheet.id;
+      if (a === 'edit') { state.sheet.mode = 'edit'; return renderSheet(); }
+      if (a === 'cancel') { state.sheet.mode = 'detail'; return renderSheet(); }
+      if (a === 'save') return saveEdit();
+      if (a === 'like') return toggleLike(id).then(renderSheet);
+      if (a === 'hide') return hideItem(id).then((ok) => { if (ok) closeSheet(); });
+      if (a === 'coord') { closeSheet(); state.pin = id; state.view = 'coord'; render(); return window.scrollTo(0, 0); }
+    }
+    if (t.dataset.pal) return palAction(t.dataset.pal, t);
+    if (t.dataset.like) return toggleLike(t.dataset.like);
+    if (t.dataset.ignore) state.ignoreW = !state.ignoreW;
+    else if (t.dataset.cat) state.cat = t.dataset.cat;
     else if (t.dataset.day) { state.day = t.dataset.day; state.idx = 0; }
     else if (t.dataset.slot) {
       const sel = state.slots[state.day]; const n = t.dataset.slot; const i = sel.indexOf(n);
@@ -277,13 +563,13 @@
       state.idx = 0;
     }
     else if (t.dataset.purpose) { state.purpose = t.dataset.purpose; state.idx = 0; }
-    else if (t.dataset.nav) { state.idx += Number(t.dataset.nav); }
-    else if (t.dataset.save) { return saveSetup(); }
+    else if (t.dataset.nav) state.idx += Number(t.dataset.nav);
+    else if (t.dataset.save) return saveSetup();
     render();
   });
 
   function toast(msg) {
-    const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
+    const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg; el.style.zIndex = 40;
     document.body.appendChild(el); setTimeout(() => el.remove(), 2200);
   }
   async function post(body) {
@@ -298,35 +584,20 @@
   }
   async function hideItem(id) {
     const list = state.data.closet || [];
-    const idx = list.findIndex((c) => String(c['ID']) === id);
-    if (idx < 0) return;
+    const idx = list.findIndex((c) => String(c['ID']) === String(id));
+    if (idx < 0) return false;
     const item = list[idx];
-    if (!confirm('"' + item['이름'] + '"을(를) 옷장에서 뺄까요?\n(시트의 사용 칸이 N이 돼요. Y로 바꾸면 되살아나요)')) return;
+    if (!confirm('"' + item['이름'] + '"을(를) 옷장에서 뺄까요?\n(시트의 사용 칸이 N이 돼요. Y로 바꾸면 되살아나요)')) return false;
     list.splice(idx, 1); store.set(LS.cache, JSON.stringify(state.data)); render();
-    try { await post({ action: 'hide', id: id }); toast('옷장에서 뺐어요: ' + item['이름']); }
-    catch (e) { list.splice(idx, 0, item); store.set(LS.cache, JSON.stringify(state.data)); render(); toast('삭제 못 했어요: ' + e.message); }
+    try { await post({ action: 'hide', id: id }); toast('옷장에서 뺐어요: ' + item['이름']); return true; }
+    catch (e) { list.splice(idx, 0, item); store.set(LS.cache, JSON.stringify(state.data)); render(); toast('삭제 못 했어요: ' + e.message); return false; }
   }
   async function toggleLike(id) {
-    const item = (state.data.closet || []).find((c) => String(c['ID']) === id);
-    if (!item) return;
-    const prev = item['좋아요'];
-    const next = String(prev).toUpperCase() !== 'Y';
-    item['좋아요'] = next ? 'Y' : '';
-    store.set(LS.cache, JSON.stringify(state.data));
-    render();
-    try {
-      const res = await fetch(apiUrl(), {
-        method: 'POST', redirect: 'follow',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ token: store.get(LS.token), action: 'like', id: id, value: next })
-      });
-      const j = await res.json();
-      if (!j.ok) throw new Error(j.error || '저장 실패');
-      toast(next ? '♥ 좋아요 저장' : '좋아요 해제');
-    } catch (e) {
-      item['좋아요'] = prev; store.set(LS.cache, JSON.stringify(state.data)); render();
-      toast('저장 못 했어요: ' + e.message);
-    }
+    const item = byId(id); if (!item) return;
+    const prev = item['좋아요'], next = !yes(prev);
+    item['좋아요'] = next ? 'Y' : ''; store.set(LS.cache, JSON.stringify(state.data)); render();
+    try { await post({ action: 'like', id: id, value: next }); toast(next ? '♥ 좋아요 저장' : '좋아요 해제'); }
+    catch (e) { item['좋아요'] = prev; store.set(LS.cache, JSON.stringify(state.data)); render(); toast('저장 못 했어요: ' + e.message); }
   }
 
   function setupForm(err) {
@@ -342,7 +613,6 @@
     if (t && t.value.trim()) store.set(LS.token, t.value.trim());
     load();
   }
-
   async function load() {
     const api = apiUrl(), token = store.get(LS.token);
     const cached = store.get(LS.cache);
@@ -355,18 +625,13 @@
       if (json.error) throw new Error(json.error);
       state.data = json; state.stale = false;
       store.set(LS.cache, JSON.stringify(json));
-      render();
+      if (!state.palEdit) render();
+      if (state.sheet) renderSheet();
     } catch (e) {
       if (state.data) { state.stale = true; render(); }
       else setupForm('불러오기 실패: ' + e.message);
     }
   }
-  document.getElementById('view').addEventListener('click', () => {
-    if (!state.data) return;
-    state.view = state.view === 'rec' ? 'closet' : 'rec';
-    document.getElementById('view').textContent = state.view === 'closet' ? '✨ 추천' : '👚 옷장';
-    render(); window.scrollTo(0, 0);
-  });
   document.getElementById('refresh').addEventListener('click', () => { $sub.textContent = '불러오는 중…'; load(); });
   load();
 })();

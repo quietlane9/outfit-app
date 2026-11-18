@@ -46,10 +46,35 @@
     let dh = Math.abs(hue(p) - hue(t)); dh = Math.min(dh, 360 - dh);
     return dh <= 35;
   }
+  // palette.json(2026 원본 형식)과 시트 형식을 같은 모양으로: colors[].with/note ↔ suggested_pairs_with_basics
+  function normalizePalette(p) {
+    if (!p || !p.colors) return null;
+    const sp = p.suggested_pairs_with_basics || [];
+    const colors = p.colors.map((c) => {
+      const s = sp.find((x) => x.trend === c.id) || {};
+      return { id: c.id, name_ko: c.name_ko || c.id, hex: c.hex, role: c.role || 'base',
+        with: (c.with && c.with.length ? c.with : s.with) || [], note: c.note || s.note || '' };
+    });
+    return {
+      source: p.source || '', version: p.version || '', colors,
+      official_pairs: (p.official_pairs || []).map((x) => ({ colors: x.colors.slice(0, 2), mood: x.mood || '' })),
+      suggested_pairs_with_basics: colors.filter((c) => c.with.length).map((c) => ({ trend: c.id, with: c.with, note: c.note })),
+      rules: p.rules || { max_accent_per_outfit: 1, accent_area: 'small' }
+    };
+  }
+  // 팔레트 색별로 해당하는 내 옷
+  function paletteMatches(items, palette) {
+    const PI = paletteIndex(items, palette); const out = {};
+    if (!PI) return out;
+    Object.keys(PI.trends).forEach((id) => (out[id] = []));
+    PI.map.forEach((v, x) => v.trends.forEach((t) => out[t].push(x)));
+    return out;
+  }
   // 아이템별 팔레트 정보 미리 계산
   function paletteIndex(items, palette) {
-    if (!palette || !palette.colors) return null;
-    const trends = palette.colors.map((c) => ({ ...c, lab: lab(c.hex) }));
+    palette = normalizePalette(palette);
+    if (!palette) return null;
+    const trends = palette.colors.filter((c) => /^#[0-9a-f]{6}$/i.test(c.hex)).map((c) => ({ ...c, lab: lab(c.hex) }));
     const map = new Map();
     items.forEach((x) => {
       const h = itemHex(x); if (!h) return map.set(x, { trends: [], lab: null });
@@ -70,7 +95,7 @@
     });
     (PI.palette.suggested_pairs_with_basics || []).forEach((sp) => {
       if (!present.has(sp.trend)) return;
-      const basics = sp.with.map(lab);
+      const basics = sp.with.filter((h) => /^#[0-9a-f]{6}$/i.test(h)).map(lab);
       const mate = info.find((i) => i.lab && !i.trends.includes(sp.trend) && basics.some((b) => dE(i.lab, b) <= 15));
       if (mate) { score += 0.5; notes.push('🎨 ' + nm(sp.trend) + ' + ' + mate.x['이름']); }
     });
@@ -122,9 +147,32 @@
 
     const PI = paletteIndex(items, data.palette);
     const palW = num((data.settings || {})['팔레트 가중치'], 1);   // 설정 탭: 0이면 끔, 2면 두 배
+    // 특정 옷 코디(opt.pin) · 날씨 무시(opt.ignoreWeather)
+    const pin = opt.pin ? items.find((x) => String(x['ID']) === String(opt.pin)) : null;
+    const W = !opt.ignoreWeather;
+    const pinL = pin ? pin['레이어'] : '';
     const bases = [];
-    tops.forEach((t) => bottoms.forEach((b) => bases.push([t, b])));
-    dresses.forEach((d) => bases.push([d]));
+    (pinL === '이너' ? [pin] : tops).forEach((t) => (pinL === '하의' ? [pin] : bottoms).forEach((b) => bases.push([t, b])));
+    if (!pinL || pinL === '원피스' || !['이너', '하의'].includes(pinL)) (pinL === '원피스' ? [pin] : dresses).forEach((d) => bases.push([d]));
+    const midOpts = pinL === '미들' ? [pin] : [null, ...mids];
+    const outerOpts = pinL === '아우터' ? [pin] : [null, ...outers];
+    ctx.pin = pin; ctx.ignoreWeather = !W;
+    if (!W) {
+      // 날씨 무시: 고른 옷의 계절 기온을 가상 날씨로 사용 (가을옷 15℃, 겨울옷 2℃, 여름옷 24℃)
+      const ps = pin ? String(pin['계절'] || '') : '';
+      const vs = ['가을', '봄', '겨울', '여름'].find((q) => ps.includes(q)) || '가을';
+      const vt = { '여름': 24, '봄': 15, '가을': 15, '겨울': 2 }[vs];
+      const vr = (data.rules || []).find((r) => vt >= num(r['체감온도 하한(℃)'], -99) && vt <= num(r['체감온도 상한(℃)'], 99)) || ctx.rule;
+      Object.assign(ctx, { design: vt, season: vs, rule: vr, virtualSeason: vs,
+        warmMin: num(vr['목표 보온합 최소'], 0), warmMax: num(vr['목표 보온합 최대'], 99) });
+    }
+    if (pin && W) {
+      const warn = [];
+      if (pinL !== '미들' && pin['계절'] && !String(pin['계절']).includes(ctx.season)) warn.push('이 옷은 ' + pin['계절'] + '용인데 지금 날씨는 ' + ctx.season + ' 기준이에요');
+      if (pinL === '아우터' && String(ctx.rule['겉옷'] || '') === '없음') warn.push('겉옷 없이도 되는 날씨예요');
+      if (num(pin['보온(1-5)'], 2) > ctx.warmMax) warn.push('이 옷만으로도 목표 보온보다 따뜻해요');
+      ctx.pinWarn = warn;
+    }
 
     const outerRule = String(ctx.rule['겉옷'] || '');
     const mufflerRule = String(ctx.rule['목도리'] || 'N').toUpperCase();
@@ -134,18 +182,19 @@
     const frontBonus = yes(P['앞트임 우대']);
 
     let accOpts = [null];
-    if (mufflerRule === 'Y') accOpts = mufflers.slice();
+    if (pinL === '소품') accOpts = [pin];
+    else if (mufflerRule === 'Y') accOpts = mufflers.slice();
     else if (mufflerRule === '선택') accOpts = [null, ...mufflers, ...scarves];
     else if (ctx.design >= 8 && ctx.design <= 22) accOpts = [null, ...scarves];
     if (!accOpts.length) accOpts = [null];
 
     const combos = [];
     for (const base of bases) {
-      for (const mid of [null, ...mids]) {
-        for (const outer of [null, ...outers]) {
+      for (const mid of midOpts) {
+        for (const outer of outerOpts) {
           if (mid && outer && !/코트|패딩/.test(outer['이름'])) continue; // 재킷 위에 재킷은 X, 코트·패딩 안에만 레이어드
-          if (outerRule === '없음' && outer) continue;
-          if (/필수/.test(outerRule) && /아우터/.test(outerRule) && !outer) continue;
+          if (outerRule === '없음' && outer && outer !== pin) continue;
+          if (/필수/.test(outerRule) && /아우터/.test(outerRule) && !outer && pinL !== '미들') continue;
           if (/미들 필수/.test(outerRule) && !mid && !outer) continue;
           for (const a of accOpts) {
             const wear = [...base, mid, outer].filter(Boolean);
@@ -153,6 +202,7 @@
             const warm = all.reduce((s, x) => s + num(x['보온(1-5)'], 2), 0);
             let score = 0; const why = [];
 
+            {
             // 보온 목표
             if (warm < ctx.warmMin) score -= 2.5 * (ctx.warmMin - warm);
             if (warm > ctx.warmMax) score -= 2 * (warm - ctx.warmMax);
@@ -161,6 +211,7 @@
             if (/아우터 권장/.test(outerRule) && outer) score += 1.5;
             // 반팔·민소매는 쌀쌀하면 감점
             if (ctx.design < 15 && base.some((x) => /반팔|민소매/.test(x['이름']))) score -= 3;
+            }
             // 목적: 격식
             const formal = Math.min(...wear.map((x) => num(x['격식(1-3)'], 2)));
             if (formal < formalMin) score -= 3 * (formalMin - formal);
@@ -173,10 +224,10 @@
             wear.forEach((x) => { if (num(x['활동성(1-3)'], 2) < activeMin) score -= 1.5; });
             if (frontBonus) { const o = outer || mid; if (o && yes(o['앞트임'])) score += 1; }
             // 비
-            if (ctx.rainy) all.forEach((x) => { if (yes(x['비오는날 피함'])) { score -= 3; } });
+            if (W && ctx.rainy) all.forEach((x) => { if (yes(x['비오는날 피함'])) { score -= 3; } });
             // 일교차 → 벗을 수 있는 겉옷
             const removable = [mid, outer].some((x) => x && yes(x['앞트임']));
-            if (ctx.bigSwing && removable) score += 1.5;
+            if (W && ctx.bigSwing && removable) score += 1.5;
             // 색: 포인트는 하나만 (소품 포함)
             const points = all.filter((x) => x['색계열'] === '포인트').length;
             if (points > 1) score -= 2.5 * (points - 1);
@@ -201,12 +252,12 @@
     }
     combos.sort((x, y) => y.score - x.score);
 
-    // 다양성: 상의(원피스)·하의·겉옷이 다른 조합 위주로 5개
-    // 다양성: 상의(원피스)는 겹치지 않게, 나머지 옷·소품은 5개 중 최대 2번
+    // 다양성: 주인공 옷(상의/원피스, 특정 옷 코디면 그 옷 다음 주요 옷)은 겹치지 않게, 나머지는 5개 중 최대 2번
     const picked = [], used = {};
-    const ids = (c) => [...c.base, c.mid, c.outer, c.acc].filter(Boolean).map((x) => x['ID']);
+    const ids = (c) => [...c.base, c.mid, c.outer, c.acc].filter(Boolean).filter((x) => x !== pin).map((x) => x['ID']);
+    const key = (c) => { const m = [c.base[0], c.base[1], c.outer || c.mid].find((x) => x && x !== pin); return m ? m['ID'] : ''; };
     for (const c of combos) {
-      if (picked.some((p) => p.base[0]['ID'] === c.base[0]['ID'])) continue;
+      if (picked.some((p) => key(p) === key(c))) continue;
       if (ids(c).some((id) => (used[id] || 0) >= 2)) continue;
       picked.push(c); ids(c).forEach((id) => (used[id] = (used[id] || 0) + 1));
       if (picked.length >= 5) break;
@@ -217,14 +268,14 @@
 
   function notes(c, ctx) {
     const n = [];
-    if (ctx.rainy) n.push('☂ 우산 챙기기');
-    if (ctx.bigSwing && c.removable) n.push('낮엔 ' + (c.outer || c.mid)['이름'] + ' 벗기');
+    if (!ctx.ignoreWeather && ctx.rainy) n.push('☂ 우산 챙기기');
+    if (!ctx.ignoreWeather && ctx.bigSwing && c.removable) n.push('낮엔 ' + (c.outer || c.mid)['이름'] + ' 벗기');
     if (c.acc && /목도리/.test(c.acc['이름'])) n.push('바람 막는 목도리');
-    if (ctx.wsdMax >= 5) n.push('바람 강함 ' + ctx.wsdMax + 'm/s');
+    if (!ctx.ignoreWeather && ctx.wsdMax >= 5) n.push('바람 강함 ' + ctx.wsdMax + 'm/s');
     (c.pal || []).slice(0, 2).forEach((p) => n.push(p));
     return n;
   }
 
-  const api = { recommend, context };
+  const api = { recommend, context, normalizePalette, paletteMatches, itemHex, COLOR_HEX };
   if (typeof module !== 'undefined') module.exports = api; else root.Outfit = api;
 })(this);
